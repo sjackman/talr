@@ -1,0 +1,11 @@
+*.bam
+*.bam.bai
+*.fa
+*.fai
+*.fq.gz
+*.gfa
+*.gff
+*.log
+*.paf.gz
+*.sam.gz
+*.unicycler/
