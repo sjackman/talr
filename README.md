@@ -70,7 +70,7 @@ Do you see any major structural misassemblies?
 
 ```sh
 # Compile Physlr.
-make -C ~/work/talr/physlr/data/src CC=gcc-9 CXX=g++-9
+make -C ~/work/talr/physlr/src CC=gcc-9 CXX=g++-9
 pip_pypy3 install networkx pygraphviz tqdm
 Rscript -e 'install.packages(c("tidyverse", "Polychrome"))'
 # Run Physlr.
