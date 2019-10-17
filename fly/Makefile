@@ -34,7 +34,7 @@ fly.ensembl.chr.fa: fly.ensembl.fa
 
 # Symlink the reference genome.
 fly.fa: fly.ensembl.chr.fa
-	ln -s $< $@
+	ln -sf $< $@
 
 # Download the fly gene annotation from Ensembl.
 fly.gff:
@@ -96,7 +96,7 @@ f1chr4.fq.gz:
 # Assembled paired-end reads using Unicycler.
 %.unicycler.gfa: %.1.fq.gz %.2.fq.gz
 	unicycler -t$t --mode bold -o $*.unicycler -1 $*.1.fq.gz -2 $*.2.fq.gz
-	ln -s $*.unicycler/assembly.gfa $@
+	ln -sf $*.unicycler/assembly.gfa $@
 
 # Copy the FASTA file.
 %.unicycler.fa: %.unicycler.gfa
