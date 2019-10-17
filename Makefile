@@ -3,7 +3,7 @@
 .DELETE_ON_ERROR:
 .SECONDARY:
 
-all: physlr/README.md
+all: physlr/src/physlr-indexlr
 	make -C fly fly.fa.fai flychr4.fa.fai f1.supernova.fa.fai f1chr4.fq.gz
 
 install-deps: physlr/README.md
@@ -14,3 +14,6 @@ install-deps: physlr/README.md
 
 physlr/README.md:
 	git clone https://github.com/bcgsc/physlr
+
+physlr/src/physlr-indexlr: physlr/README.md
+	make -C ~/work/talr/physlr/src CC=gcc-9 CXX=g++-9
