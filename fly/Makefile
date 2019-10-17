@@ -3,7 +3,7 @@
 # and https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/performance
 
 # Number of threads.
-t=8
+t=4
 
 # Reference genome.
 ref=fly
