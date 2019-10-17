@@ -13,7 +13,9 @@ Hackseq 2019 Project 6
 Install Homebrew on macOS (<https://brew.sh>) and Linux (<https://docs.brew.sh/linux>).
 
 ```sh
-mkdir -p ~/work/talr
+mkdir -p ~/work
+cd ~/work
+git clone https://github.com/sjackman/talr
 cd ~/work/talr
 brew bundle
 git clone https://github.com/bcgsc/physlr
