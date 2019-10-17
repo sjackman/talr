@@ -75,6 +75,9 @@ Rscript -e 'install.packages(c("tidyverse", "Polychrome"))'
 cd ~/work/talr/physlr/data
 mkdir -p fly
 ln -s ../../../fly/f1chr4.fq.gz fly/fly.f1.chr4.sortbxn.dropse.fq.gz
+# Use the Ensembl reference genome rather than default NCBI reference genome.
+make fly/fly.ensembl.chr.fa
+ln -sf fly.ensembl.chr.fa fly/fly.fa
 # Physlr will take ~10 minutes.
 nohup time make ref=fly lr=f1chr4 draft=f1.supernova.scaftigs n=50 f1chr4.k32-w32.n100-1000.c2-x.physlr.overlap.n50.mol.backbone.fleshed.path >f1chr4.k32-w32.n100-1000.c2-x.physlr.overlap.n50.mol.backbone.fleshed.path.log
 ```
