@@ -36,13 +36,13 @@ fly.ensembl.chr.fa: fly.ensembl.fa
 fly.fa: fly.ensembl.chr.fa
 	ln -s $< $@
 
-# Extract chr4 from the fly reference genome.
-flychr4.fa: fly.ensembl.chr.fa
-	samtools faidx $< 4 | seqtk seq >$@
-
 # Download the fly gene annotation from Ensembl.
 fly.gff:
 	curl ftp://ftp.ensembl.org/pub/release-98/gff3/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.22.98.chr.gff3.gz | $(zcat) >$@
+
+# Download fly chr4 from Ensembl.
+flychr4.fa:
+	curl ftp://ftp.ensembl.org/pub/release-98/fasta/drosophila_melanogaster/dna/Drosophila_melanogaster.BDGP6.22.dna.chromosome.4.fa.gz | seqtk seq >$@
 
 # Download the fly chr4 gene annotation from Ensembl.
 flychr4.gff:
@@ -51,6 +51,10 @@ flychr4.gff:
 # Download the Supernova assembly of the linked reads from 10x Genomics.
 f1.supernova.fa:
 	curl http://cf.10xgenomics.com/samples/assembly/2.1.0/fly/fly_pseudohap.fasta.gz | $(zcat) >$@
+
+# Extract the chr4 scaffold from the Supernova assembly.
+f1chr4.supernova.fa: f1.supernova.fa
+	samtools faidx $< 49 | seqtk seq >$@
 
 # Download the linked reads of chr4.
 f1chr4.fq.gz:
@@ -81,6 +85,10 @@ f1chr4.fq.gz:
 # Select the second read of the read pair.
 %.2.fq.gz: %.fq.gz
 	seqtk dropse $< | seqtk seq -2 | $(gzip) >$@
+
+# Cut scaffolds at Ns to create scaftigs.
+%.scaftigs.fa: %.fa
+	seqtk cutN -n1 $< | tr :- _ | seqtk seq >$@
 
 ################################################################################
 # Unicycler
