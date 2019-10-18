@@ -11,6 +11,7 @@ Linked reads from 10x Genomics combine the benefits of large DNA molecules with 
 
 - Physlr Poster: Physlr: Construct a physical map from linked reads <https://f1000research.com/posters/8-1310>
 - Physlr GitHub repo: <https://github.com/bcgsc/physlr>
+- What are linked reads? <https://www.10xgenomics.com/linked-reads/>
 
 # Install Software
 
