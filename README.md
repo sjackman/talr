@@ -3,6 +3,10 @@
 Hackseq 2019 Project 6
 <https://www.hackseq.com/hackseq19#descriptions>
 
+# Description
+
+Linked reads from 10x Genomics combine the benefits of large DNA molecules with the sequence fidelity and cost of short read sequencing. We will design a software tool to extract the reads from a set of linked read barcodes and assemble those reads. Multiple targeted assemblies will be combined to assemble an entire chromosome.
+
 # Background
 
 - Physlr Poster: Physlr: Construct a physical map from linked reads <https://f1000research.com/posters/8-1310>
