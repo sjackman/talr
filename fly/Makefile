@@ -108,6 +108,17 @@ results/assemblies/%.unicycler.fa: results/assemblies/%.unicycler.gfa
 	seqtk seq working/$*.unicycler/assembly.fasta >$@
 
 ################################################################################
+# spades
+
+# Assembled paired-end reads using spades.
+results/assemblies/%.spades.contigs.fa: %.1.fq.gz %.2.fq.gz
+	mkdir -p working
+	spades.py -t 32 -1 $*.1.fq.gz -2 $*.2.fq.gz -o working/$*.spades 1> working/$*.spades.log 2>&1
+	mkdir -p results/assemblies
+	seqtk seq working/$*.spades/contigs.fasta > $@
+	seqtk seq working/$*.spades/scaffolds.fasta > results/assemblies/$*.spades.scaffolds.fa
+
+################################################################################
 # minimap2
 
 # Align a FASTA file to the reference genome and produce a PAF file.

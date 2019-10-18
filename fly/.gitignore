@@ -9,3 +9,5 @@
 *.paf.gz
 *.sam.gz
 *.unicycler/
+working
+results
