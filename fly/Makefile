@@ -3,7 +3,7 @@
 # and https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/performance
 
 # CURRENT DIRECTORY
-root=$(PWD)
+root := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 # Number of threads.
 t=4
