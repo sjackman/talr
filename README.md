@@ -13,6 +13,10 @@ Linked reads from 10x Genomics combine the benefits of large DNA molecules with 
 - Physlr GitHub repo: <https://github.com/bcgsc/physlr>
 - What are linked reads? <https://www.10xgenomics.com/linked-reads/>
 
+# Tasks
+
+For a list of tasks, see <https://github.com/sjackman/talr/issues/1>
+
 # Install Software
 
 Install Homebrew on macOS (<https://brew.sh>) and Linux (<https://docs.brew.sh/linux>).
