@@ -1,5 +1,6 @@
 import os
 import json
+import tempfile
 from collections import namedtuple
 default_config = "config.json"
 if not config and os.path.exists(default_config):
@@ -14,7 +15,9 @@ required_params = [
                     RequiredParam("talr_root",
                                   "Path to your talr directory"),
                     RequiredParam("fleshed_path",
-                                  "Path to fleshed out backbone path file")
+                                  "Path to fleshed out backbone path file"),
+                    RequiredParam("reads",
+                                  "Path to interleaved chromium reads fq")
                   ]
 cfg_err = False
 for key, description in required_params:
@@ -30,6 +33,7 @@ if cfg_err:
 PHYSLR_ROOT  = config.get("physlr_root")
 TALR_ROOT    = config.get("talr_root")
 fleshed_path = config.get("fleshed_path")
+reads        = config.get("reads")
 
 # optional params
 n = config.get("n", 20)  # number of smaller paths
@@ -42,14 +46,63 @@ run_flag_name = "{}_n_{}_r_{}_run_complete.txt".format(experiment, n, r)
 rule all:
     input: run_flag_name
 
+local_reads = os.path.join("reads", os.path.basename(reads))
+if local_reads.endswith(".gz"):
+    pass
+elif local_reads.endswith(".bz2"):
+    local_reads = os.path.splitext(local_reads)[0] + ".gz"
+else:
+    local_reads = local_reads + ".gz"
+
+
+# Bgzip reads
+rule prep_reads:
+    input: reads
+    output: local_reads
+    shell: """
+    case "{input}" in
+    *.gz )
+      zcat {input} | bgzip -c > {output} ;;
+    *.bz2 )
+      bzip2 -dc {input} | bgzip -c > {output} ;;
+    * )
+      cat {input} | bgzip -c > {output} ;;
+    esac
+    bgzip -r {output}
+    """
+
+
 # Chunk fleshed backbone into n parts
 chunked_path = (os.path.splitext(os.path.basename(fleshed_path))[0] + 
 	        ".chunked.{}_{}.path".format(n, r))
 rule chunk_fleshed_backbone:
     input: fleshed_path
-    output: chunked_path, touch(run_flag_name)
+    output: chunked_path
     shell: """
-    pypy3 {TALR_ROOT}/amirhossein/chunk_fleshed_backbone.py {input} {n} {r} \
+    pypy3 {TALR_ROOT}/bin/chunk_fleshed_backbone.py {input} {n} {r} \
     > {output[0]}
     """
+
+# Create fastq barcode index
+fq_bdx = "{}.bdx".format(local_reads)
+rule build_fq_bdx:
+    input: local_reads
+    output: fq_bdx
+    shell: """
+    python3 {TALR_ROOT}/bin/index_barcodes.py {input}
+    """
+
+# Create fastqs for each chunk containing reads from that region
+checkpoint create_chunk_fastqs:
+    input: local_reads, fq_bdx, chunked_path
+    output: touch(run_flag_name)
+    run:
+        if not os.path.exists("chunked_fqs"):
+            os.mkdir("chunked_fqs")
+        with open(chunked_path) as f:
+            for idx, line in enumerate(f):
+                 with tempfile.NamedTemporaryFile(mode="w") as t:
+                    print(line, file=t)
+                    shell("cat {t.name} | python3 {TALR_ROOT}/bin/get_barcode_reads.py {input[0]} > chunked_fqs/{experiment}_chunk_{idx}.fq.gz")
+
 
