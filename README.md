@@ -5,7 +5,6 @@ Hackseq 2019 Project 6
 
 - @sjackman Shaun Jackman (team lead)
 - @afshinfard Amirhossein Afshinfard
-- @aliceZhu Alice Zhu
 - @bernieyiweizhao Bernie Zhao
 - @emreerhan Emre Erhan
 - @gapalm Liubov Gapa
