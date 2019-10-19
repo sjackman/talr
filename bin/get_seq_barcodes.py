@@ -21,6 +21,8 @@ parser.add_argument(
     help="List of sequence names to get barcodes for. If empty, \
     the script will get barcodes for all sequences.",
 )
+parser.add_argument('-t', '--threshold',
+help="Minimum mapped reads with the same barcode required for a barcode to be included.", type=int, default=3)
 args = parser.parse_args()
 
 
@@ -55,12 +57,13 @@ def main():
 
                     if read_name in read2seq:
                         seq = read2seq[read_name]
-                        if seq in seq_barcodes:
-                            if barcode not in seq_barcodes[seq]:
-                                seq_barcodes[seq].add(barcode)
+                        if not seq in seq_barcodes:
+                            seq_barcodes[seq] = {}
+
+                        if not barcode in seq_barcodes[seq]:
+                            seq_barcodes[seq][barcode] = 1
                         else:
-                            seq_barcodes[seq] = set()
-                            seq_barcodes[seq].add(barcode)
+                            seq_barcodes[seq][barcode] += 1
 
             i += 1
             i %= 4
@@ -69,9 +72,10 @@ def main():
         print(seq + "\t", end="")
         barcodes = seq_barcodes[seq]
         for i, barcode in enumerate(sorted(barcodes)):
-            print(barcode, end="")
-            if i < len(barcodes) - 1:
-                print(",", end="")
+            if barcodes[barcode] >= args.threshold:
+                if i > 0:
+                    print(",", end="")
+                print(barcode, end="")
         print()
 
 
