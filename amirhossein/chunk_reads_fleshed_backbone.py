@@ -55,10 +55,11 @@ for chunk_bx in chunks_bx:
     chunks_reads.append([read for bx in chunk_bx for read in bx_read_dict[bx]])
     # chunks_reads.append([[i for i in read] for bx in chunk_bx for read in bx_read_dict[bx]])
 iter=0
-try:
-    os.mkdir(pfn+"_reads/")
-except IndexError as ie:
-    raise SystemError("Error: Could not make the directory.\n")
+if not os.path.exists(pfn+"_reads/"):
+    try:
+        os.mkdir(pfn+"_reads/")
+    except IndexError as ie:
+        raise SystemError("Error: Could not make the directory.\n")
 
 for chunk_reads in chunks_reads:
     iter+=1
