@@ -85,10 +85,15 @@ def import_path(path_file, bdx):
 
     Args:
         path_file: A .backbone.fleshed.path file output by Physlr
+
         bdx: Dictionary output by the import_bdx() function
 
     Returns:
-        fbb:
+        fbb: A complex nested data structure combining the path and bdx information
+            Level 1: List corresponding to each sequence in the Physlr path file
+            Level 2: Ordered dicts corresponding to barcodes in pre-fleshed backbone ("vertebrae")
+            Level 3: List of bgx index stats for each vertebrae, and...
+            Level 4: Dictionary barcodes and bgx stats for each GEM overlapping the vertebra
     """
     fbb = []  # Fleshed backbone
     with open(path_file) as fin:
@@ -102,7 +107,7 @@ def import_path(path_file, bdx):
             # Strip flesh from backbone
             bb_barcodes = [b for b in seq_path if not b.startswith('(')]
 
-            # Re-fleshify vertebrea
+            # Re-fleshify vertebrae
             seq_fbb = OrderedDict([(b, fleshify_vertebra(seq_path=seq_path, bdx=bdx, vertebra=b))
                                    for b in bb_barcodes])
 
@@ -114,8 +119,13 @@ def import_path(path_file, bdx):
 def fleshify_vertebra(seq_path, bdx, vertebra):
     """Assign overlapping barcodes to barcodes from the backbone
 
+    Args:
+        seq_path: A single line from a Physlr path file, split by whitespace
+        bdx: Dictionary output by the import_bdx() function
+        vertebra: Barcode of a single GEM from the pre-fleshed backbone
+
     Returns:
-        List with four elements:
+        vertebral_flesh: List with four elements:
             1. Number of reads with barcode of vertebra
             2. Starting position of reads in bgzip'd FASTQ file
             3. Length of read information in bgzip'd FASTQ file
@@ -142,11 +152,20 @@ def fleshify_vertebra(seq_path, bdx, vertebra):
 
 
 def subset_reads(fqbgz, bdx, barcode):
-    """Extract reads corresponding to a barcode"""
+    """Extract reads corresponding to a barcode
+
+    Args:
+        fqbgz: Name of bgzip'd FASTQ file to be subset
+        bdx: Dictionary output by the import_bdx() function
+        barcode: GEM barcode for which corresponding reads should be subset
+
+    Returns:
+        reads: String containing data for reads corresponding to GEM
+    """
     offset, size = bdx[barcode.split('_')[0]][1:3]
     out = sp.run(["bgzip", "-b", offset, "-s", size, fqbgz], capture_output=True)
-    out = out.stdout.decode()
-    return(out)
+    reads = out.stdout.decode()
+    return(reads)
 
 
 def get_parse_args():
