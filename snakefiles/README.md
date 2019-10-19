@@ -24,5 +24,6 @@ Key | Description
 `physlr_root` | path to your physlr repo
 `talr_root` | path to your talr repo
 `fleshed_path` | path to the `.backbone.fleshed.path` file that you want to use
+`reads` | path to the reads that we are extracting from
 
 

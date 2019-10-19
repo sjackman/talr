@@ -8,6 +8,9 @@ t=16
 # Reference genome.
 ref=fly
 
+# Sample dataset
+sample=f1chr4
+
 # Compress in parallel.
 ifneq ($(shell command -v pigz),)
 gzip=pigz -p$t
@@ -91,6 +94,16 @@ f1chr4.fq.gz:
 # Cut scaffolds at Ns to create scaftigs.
 %.scaftigs.fa: %.fa
 	seqtk cutN -n1 $< | tr :- _ | seqtk seq >$@
+
+################################################################################
+# ASSEMBLIES
+unicycler: results/assemblies/$(sample).unicycler.fa
+spades: results/assemblies/$(sample).spades.contigs.fa
+abyss: results/assemblies/$(sample).abyss.contigs.fa
+unicycler-arcs: results/arcs-abyss-scaffold/$(sample).unicycler.fa
+spades-arcs: results/arcs-abyss-scaffold/$(sample).spades.contigs.fa results/arcs-abyss-scaffold/$(sample).spades.scaffolds.fa
+abyss-arcs: results/arcs-abyss-scaffold/$(sample).abyss.contigs.fa results/arcs-abyss-scaffold/$(sample).abyss.scaffolds.fa
+
 
 ################################################################################
 # Unicycler
