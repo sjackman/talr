@@ -7,14 +7,11 @@ import subprocess
 parser = argparse.ArgumentParser(
     description="""
     Output the reads belonging to the set of given barcodes.
+    Before running this script, you need to run index_barcodes.py on your bgzipped reads file.
     The barcodes are read from stdin and should be separated by either comma or whitespace.
 """
 )
-parser.add_argument(
-    "reads_file",
-    help="FASTQ reads file compressed with bgzip. \
-    There should be a corresponding index file with .bdx appended to reads_file.",
-)
+parser.add_argument("reads_file", help="FASTQ reads file compressed with bgzip.")
 args = parser.parse_args()
 
 
