@@ -35,7 +35,7 @@ def main():
         sys.exit(1)
 
     with gzip.open(args.reads_file) as readsfile_file, open(
-        args.reads_filepath + ".bdx", "w"
+        args.reads_file + ".bdx", "w"
     ) as idx_file:
         i = 0
         current_barcode = "NA"
