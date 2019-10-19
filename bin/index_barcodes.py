@@ -26,12 +26,15 @@ def main():
             reads_file.read(1)
     except (OSError, EOFError, zlib.error):
         print(
-            "File " + args.reads_file + " does not appear to be bgzipped. Exiting."
+            "File " + args.reads_file + " does not appear to be bgzipped. Exiting.",
+            file=sys.stderr,
         )
         sys.exit(1)
-    out = subprocess.run(["bgzip", "-b", "1", "-s", "1", args.reads_file], capture_output=True)
+    out = subprocess.run(
+        ["bgzip", "-b", "1", "-s", "1", args.reads_file], capture_output=True
+    )
     if out.returncode != 0:
-        print(out.stderr.decode())
+        print(out.stderr.decode(), file=sys.stderr)
         sys.exit(1)
 
     with gzip.open(args.reads_file) as readsfile_file, open(
