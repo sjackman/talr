@@ -55,9 +55,9 @@ def main():
                             + "\t"
                             + str(current_no_of_reads)
                             + "\t"
-                            + str(current_byte_size)
-                            + "\t"
                             + str(current_byte_start)
+                            + "\t"
+                            + str(current_byte_size)
                             + "\n"
                         )
 
@@ -79,9 +79,9 @@ def main():
                 + "\t"
                 + str(current_no_of_reads)
                 + "\t"
-                + str(current_byte_size)
-                + "\t"
                 + str(current_byte_start)
+                + "\t"
+                + str(current_byte_size)
                 + "\n"
             )
 
