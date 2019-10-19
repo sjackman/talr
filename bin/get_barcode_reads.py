@@ -25,14 +25,17 @@ def main():
     for line in sys.stdin:
         for token in line.strip().split():
             for barcode in token.split(","):
-                byte_start = index[barcode][1]
-                byte_size = index[barcode][2]
-                out = subprocess.run(
-                    ["bgzip", "-b", byte_start, "-s", byte_size, args.reads_file],
-                    capture_output=True,
-                )
-                out = out.stdout.decode()
-                print(out, end="")
+                if barcode in index:
+                    byte_start = index[barcode][1]
+                    byte_size = index[barcode][2]
+                    out = subprocess.run(
+                        ["bgzip", "-b", byte_start, "-s", byte_size, args.reads_file],
+                        capture_output=True,
+                    )
+                    out = out.stdout.decode()
+                    print(out, end="")
+                else:
+                    print("Barcode not found in reads!")
 
 
 if __name__ == "__main__":
