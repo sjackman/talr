@@ -53,7 +53,6 @@ def main():
     reads_fastq_path = sys.argv[1]
     fastq_file = open(reads_fastq_path)
     records = record_generator(fastq_file)
-    check_interleaved = False
     # TODO: check interleaved logic
     for record in records:
         barcode, header = get_barcode(record.header)
