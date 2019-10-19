@@ -10,9 +10,7 @@ The example below shows commands to do this for `chr4` of the Fruit Fly genome.
 ```
 make results/assemblies/f1chr4.unicycler.fa
 make results/assemblies/f1chr4.spades.contigs.fa
-make results/assemblies/f1chr4.spades.scaffolds.fa
 make results/assemblies/f1chr4.abyss.contigs.fa
-make results/assemblies/f1chr4.abyss.scaffolds.fa
 ```
 
 We can also obtain these assemblies in graph fromats that can be visualized using Bandage as follows:
