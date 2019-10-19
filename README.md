@@ -66,7 +66,7 @@ make f1chr4.fq.gz
 
 - How big is chr4?
 - What's the depth of coverage of chr4?
-- Which is the largest Supernova scaffold that maps to chr4? (hint: use minimap2)
+- Which is the largest Supernova scaffold that maps to chr4? (hint: use [minimap2](https://github.com/lh3/minimap2))
 
 # Assemble the fly linked reads using Unicycler
 
@@ -78,7 +78,7 @@ nohup time make f1chr4.unicycler.gfa >f1chr4.unicycler.gfa.log
 abyss-fac -t1000 -G1348131 f1chr4.unicycler/assembly.fasta
 ```
 
-What is the NG50 of the Unicycler assembly of f1chr4?
+What is the NG50 of the [Unicycler](https://github.com/rrwick/Unicycler) assembly of f1chr4?
 
 # Visualize the assembly graph using Bandage
 
@@ -93,7 +93,7 @@ Bandage load f1chr4.unicycler.gfa
 5. Run BLAST search
 6. Close
 
-Do you see any major structural misassemblies?
+Do you see any major structural misassemblies using [Bandage](https://github.com/rrwick/Bandage)?
 
 # Run Physlr on chr4
 
