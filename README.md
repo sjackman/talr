@@ -54,6 +54,11 @@ brew bundle
 
 # Download Data
 
+Our toy data set is the linked reads from chromosome 4 (chr4) of fruit fly (*Drosophila melanogaster*). These chr4 reads are extracted from a shotgun sequencing data set provided by 10x Genomics by aligning the full data set to the reference genome and keeping only those reads that align to chr4.
+
+See <https://support.10xgenomics.com/de-novo-assembly/datasets/2.1.0/fly>
+and <https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/performance>
+
 ```sh
 cd ~/work/talr/fly
 # Download the fly genome from NCBI.
