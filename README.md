@@ -54,6 +54,11 @@ brew bundle
 
 # Download Data
 
+Our toy data set is the linked reads from chromosome 4 (chr4) of fruit fly (*Drosophila melanogaster*). These chr4 reads are extracted from a shotgun sequencing data set provided by 10x Genomics by aligning the full data set to the reference genome and keeping only those reads that align to chr4.
+
+See <https://support.10xgenomics.com/de-novo-assembly/datasets/2.1.0/fly>
+and <https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/performance>
+
 ```sh
 cd ~/work/talr/fly
 # Download the fly genome from NCBI.
@@ -80,7 +85,7 @@ nohup time make f1chr4.unicycler.gfa >f1chr4.unicycler.gfa.log
 abyss-fac -t1000 -G1348131 f1chr4.unicycler/assembly.fasta
 ```
 
-What is the NG50 of the [Unicycler](https://github.com/rrwick/Unicycler) assembly of f1chr4?
+What is the NG50 of the [Unicycler](https://github.com/rrwick/Unicycler) assembly of f1chr4? [NG50](https://en.wikipedia.org/wiki/N50,_L50,_and_related_statistics) is a metric of genome sequence assembly contiguity.
 
 # Visualize the assembly graph using Bandage
 
