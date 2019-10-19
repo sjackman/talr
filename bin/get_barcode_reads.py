@@ -32,8 +32,10 @@ def main():
                         ["bgzip", "-b", byte_start, "-s", byte_size, args.reads_file],
                         capture_output=True,
                     )
-                    out = out.stdout.decode()
-                    print(out, end="")
+                    if out.returncode == 0:
+                        print(out.stdout.decode(), end="")
+                    else:
+                        print(out.stderr.decode(), end="")
                 else:
                     print("Barcode not found in reads!")
 
