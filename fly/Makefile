@@ -3,8 +3,7 @@
 # and https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/performance
 
 # Number of threads.
-# If you want more, just specify it at runtime like so: "make t=8 <target>"
-t=4
+t=16
 
 # Reference genome.
 ref=fly
@@ -17,6 +16,8 @@ else
 gzip=gzip
 zcat=gunzip -c
 endif
+
+abyss_k=112
 
 .DELETE_ON_ERROR:
 .SECONDARY:
@@ -125,7 +126,7 @@ results/assemblies/%.spades.fastg: results/assemblies/%.spades.contigs.fa
 # Assembled paired-end reads using abyss.
 results/assemblies/%.abyss.contigs.fa: %.1.fq.gz %.2.fq.gz
 	mkdir -p working/$*.abyss
-	abyss-pe np=$t name=assembly graph=gfa k=112 in='../../$*.1.fq.gz ../../$*.2.fq.gz' -C working/$*.abyss 1> working/$*.abyss.log 2>&1
+	abyss-pe np=$t name=assembly graph=gfa k=$(abyss_k) in='../../$*.1.fq.gz ../../$*.2.fq.gz' -C working/$*.abyss 1> working/$*.abyss.log 2>&1
 	mkdir -p results/assemblies
 	seqtk seq working/$*.abyss/assembly-contigs.fa > $@
 	seqtk seq working/$*.abyss/assembly-scaffolds.fa > results/assemblies/$*.abyss.scaffolds.fa
@@ -135,10 +136,38 @@ results/assemblies/%.abyss.contigs.gfa: results/assemblies/%.abyss.contigs.fa
 	ln -sf ../../working/$*.abyss/assembly-scaffolds.gfa results/assemblies/$*.abyss.scaffolds.gfa
 
 ################################################################################
+# ARCS
+
+# results/arcs-abyss-scaffold/%.digit.fa: results/assemblies/%.fa
+# 	mkdir -p working/arcs-abyss-scaffold/
+# 	seqtk rename $< > $@
+
+results/arcs-abyss-scaffold/%.fa: results/assemblies/%.fa
+	mkdir -p working/arcs-abyss-scaffold
+	$(eval lr_l=50)
+	$(eval arcs_c=2)
+	$(eval arcs_d=0)
+	$(eval arcs_e=30000)
+	$(eval arcs_l=0)
+	$(eval arcs_m=4-20000)
+	$(eval arcs_r=0.05)
+	$(eval arcs_s=98)
+	$(eval arcs_z=500)
+	$(eval lr_s=1000-100000)
+	$(eval lr_n=5-20)
+	abyss-map-ssq -j$t -l$(lr_l) f1chr4.fq.gz $< | abyss-fixmate-ssq --all --qname -l$(lr_l) | gzip > working/arcs-abyss-scaffold/$*.lr.sortn.sam.gz
+	gunzip -c working/arcs-abyss-scaffold/$*.lr.sortn.sam.gz | arcs -c$(arcs_c) -d$(arcs_d) -e$(arcs_e) -l$(arcs_l) -m$(arcs_m) -r$(arcs_r) -s$(arcs_s) -z$(arcs_z) -g working/arcs-abyss-scaffold/$*.arcs.dist.gv --tsv=working/arcs-abyss-scaffold/$*.arcs.tsv --barcode-counts=working/arcs-abyss-scaffold/$*.arcs.barcode-counts.tsv /dev/stdin
+	abyss-scaffold --SS -k$(abyss_k) -s$(lr_s) -n$(lr_n) -g working/arcs-abyss-scaffold/$*.arcs.path.dot working/arcs-abyss-scaffold/$*.arcs.dist.gv > working/arcs-abyss-scaffold/$*.arcs.path
+	MergeContigs -k$(abyss_k) -o working/arcs-abyss-scaffold/$*.arcs.fa $< working/arcs-abyss-scaffold/$*.arcs.path
+	mkdir -p results/arcs-abyss-scaffold
+	ln -sf ../../working/arcs-abyss-scaffold/$*.arcs.fa $@
+
+
+################################################################################
 # quast
-results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/assemblies/%.spades.contigs.fa results/assemblies/%.unicycler.fa
+results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/assemblies/%.spades.contigs.fa results/assemblies/%.unicycler.fa results/arcs-abyss-scaffold/%.abyss.contigs.fa results/arcs-abyss-scaffold/%.spades.contigs.fa results/arcs-abyss-scaffold/%.unicycler.fa 
 	mkdir -p results/quast/quast-$*
-	quast.py --eukaryote -t $t -o results/quast/quast-$* -r flychr4.fa -l abyss-contig,spades-contigs,abyss,spades,unicycler results/assemblies/$*.abyss.contigs.fa results/assemblies/$*.spades.contigs.fa results/assemblies/$*.abyss.scaffolds.fa results/assemblies/$*.spades.scaffolds.fa results/assemblies/$*.unicycler.fa
+	quast.py --eukaryote -t $t -o results/quast/quast-$* -r flychr4.fa -l abyss-contig,spades-contigs,abyss,spades,unicycler,abyss-contig-arcs,spades-contigs-arcs,abyss-arcs,spades-arcs,unicycler-arcs results/assemblies/$*.abyss.contigs.fa results/assemblies/$*.spades.contigs.fa results/assemblies/$*.abyss.scaffolds.fa results/assemblies/$*.spades.scaffolds.fa results/assemblies/$*.unicycler.fa results/arcs-abyss-scaffold/$*.abyss.contigs.fa results/arcs-abyss-scaffold/$*.spades.contigs.fa results/arcs-abyss-scaffold/$*.abyss.scaffolds.fa results/arcs-abyss-scaffold/$*.spades.scaffolds.fa results/arcs-abyss-scaffold/$*.unicycler.fa 
 
 ################################################################################
 # minimap2
