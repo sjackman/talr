@@ -21,6 +21,14 @@ make results/assemblies/f1chr4.abyss.contigs.gfa
 ```
 
 ### Scaffolding assemblies using ARCS
+One could think of improving assemblies obtained from non-LR-aware assemblers by scaffolding them using linked reads. This can be done using [ARCS](https://github.com/bcgsc/arcs) which is designed specifically to scaffold draft assemblies using linked reads. These assemblies can be obtained by running the following commands:
+```
+make results/arcs-abyss-scaffold/f1chr4.unicycler.fa
+make results/arcs-abyss-scaffold/f1chr4.spades.contigs.fa
+make results/arcs-abyss-scaffold/f1chr4.spades.scaffolds.fa
+make results/arcs-abyss-scaffold/f1chr4.abyss.contigs.fa
+make results/arcs-abyss-scaffold/f1chr4.abyss.scaffolds.fa
+```
 
 ### LR-aware assemblers
 
@@ -33,9 +41,12 @@ make results/quast/quast-f1chr4/report.txt
 
 Here is a summary of the results for `chr4` of the Fruit Fly genome.
 
-|           | NGA50 | Quast-misassemblies |
-|-----------|-------|---------------------|
-| ABySS     | 50548 | 4                   |
-| SPAdes    | 77426 | 5                   |
-| Unicycler | 53909 | 5                   |
+|                | NGA50  | Quast-misassemblies |
+|----------------|--------|---------------------|
+| ABySS          | 50548  | 4                   |
+| SPAdes         | 77426  | 5                   |
+| Unicycler      | 53909  | 5                   |
+| ABySS+ARCS     | 88659  | 10                  |
+| SPAdes+ARCS    | 172052 | 11                  |
+| Unicycler+ARCS | 137285 | 9                   |
 
