@@ -20,6 +20,8 @@ Linked reads from 10x Genomics combine the benefits of large DNA molecules with 
 
 # Background
 
+Linked read sequencing is a library preparation technique used prior to short read DNA sequencing. Large DNA molecules are isolated using microfluidics, so that reads that are derived from the same large DNA molecule are associated with the same barcode. A barcode is a 16 nucleotide sequence for 10x Genomics Chromium linked read sequencing.
+
 - Physlr Poster: Physlr: Construct a physical map from linked reads <https://f1000research.com/posters/8-1310>
 - Physlr GitHub repo: <https://github.com/bcgsc/physlr>
 - What are linked reads? <https://www.10xgenomics.com/linked-reads/>
@@ -123,3 +125,7 @@ ln -sf fly.ensembl.chr.fa fly/fly.fa
 # Physlr will take ~10 minutes.
 nohup time make t=4 ref=fly lr=f1chr4 draft=f1.supernova.scaftigs n=50 f1chr4.k32-w32.n100-1000.c2-x.physlr.overlap.n50.mol.backbone.fleshed.path >f1chr4.k32-w32.n100-1000.c2-x.physlr.overlap.n50.mol.backbone.fleshed.path.log
 ```
+
+# Additional Documentation
+
+- [doc/chunk_fleshed_backbones.md](doc/chunk_fleshed_backbones.md)

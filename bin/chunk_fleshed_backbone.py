@@ -11,17 +11,21 @@ with open(file_fleshed_backbones, mode='r') as fin:
     all = fin.read()
 
 lines = all.splitlines()
-fleshed_backbones=[]
+fleshed_backbones = []
 for line in lines:
-    fleshed_backbones.append(line.replace(',', ' ').replace(')', ' ').replace('(', ' ').split())
+    fleshed_backbones.append(
+        line.replace(',', ' ').replace(')', ' ').replace('(', ' ').split()
+    )
 
-total=sum(len(i) for i in fleshed_backbones)
+total = sum(len(i) for i in fleshed_backbones)
 b_per_c = int(total / (overlap_ratio * (chunks_count - 1)))
-overlap = int(overlap_ratio*b_per_c)
+overlap = int(overlap_ratio * b_per_c)
 
-chunkss =[]
+chunkss = []
 for backbone in fleshed_backbones:
-    chunkss.append([backbone[i:i+b_per_c] for i in range(0, len(backbone), b_per_c-overlap)])
+    chunkss.append(
+        [backbone[i : i + b_per_c] for i in range(0, len(backbone), b_per_c - overlap)]
+    )
 
 for chunks in chunkss:
     for chunk in chunks:
