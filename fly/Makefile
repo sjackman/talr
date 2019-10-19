@@ -3,7 +3,7 @@
 # and https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/performance
 
 # CURRENT DIRECTORY
-root=$(PWD)
+root := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 # Number of threads.
 t=4
@@ -106,6 +106,17 @@ results/assemblies/%.unicycler.gfa: %.1.fq.gz %.2.fq.gz
 # Copy the FASTA file.
 results/assemblies/%.unicycler.fa: results/assemblies/%.unicycler.gfa
 	seqtk seq working/$*.unicycler/assembly.fasta >$@
+
+################################################################################
+# spades
+
+# Assembled paired-end reads using spades.
+results/assemblies/%.spades.contigs.fa: %.1.fq.gz %.2.fq.gz
+	mkdir -p working
+	spades.py -t $t -1 $*.1.fq.gz -2 $*.2.fq.gz -o working/$*.spades 1> working/$*.spades.log 2>&1
+	mkdir -p results/assemblies
+	seqtk seq working/$*.spades/contigs.fasta > $@
+	seqtk seq working/$*.spades/scaffolds.fasta > results/assemblies/$*.spades.scaffolds.fa
 
 ################################################################################
 # minimap2
