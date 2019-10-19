@@ -21,8 +21,13 @@ parser.add_argument(
     help="List of sequence names to get barcodes for. If empty, \
     the script will get barcodes for all sequences.",
 )
-parser.add_argument('-t', '--threshold',
-help="Minimum mapped reads with the same barcode required for a barcode to be included.", type=int, default=3)
+parser.add_argument(
+    "-t",
+    "--threshold",
+    help="Minimum mapped reads with the same barcode required for a barcode to be included.",
+    type=int,
+    default=3,
+)
 args = parser.parse_args()
 
 

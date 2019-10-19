@@ -37,7 +37,9 @@ def main():
                     else:
                         print(out.stderr.decode(), file=sys.stderr, end="")
                 else:
-                    print("Barcode " + barcode + " not found in reads!", file=sys.stderr)
+                    print(
+                        "Barcode " + barcode + " not found in reads!", file=sys.stderr
+                    )
 
 
 if __name__ == "__main__":
