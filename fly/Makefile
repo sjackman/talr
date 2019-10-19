@@ -2,6 +2,9 @@
 # See https://support.10xgenomics.com/de-novo-assembly/datasets/2.1.0/fly
 # and https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/performance
 
+# CURRENT DIRECTORY
+root := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
 # Number of threads.
 t=6
 
@@ -94,13 +97,26 @@ f1chr4.fq.gz:
 # Unicycler
 
 # Assembled paired-end reads using Unicycler.
-%.unicycler.gfa: %.1.fq.gz %.2.fq.gz
-	unicycler -t$t --mode bold -o $*.unicycler -1 $*.1.fq.gz -2 $*.2.fq.gz
-	ln -sf $*.unicycler/assembly.gfa $@
+results/assemblies/%.unicycler.gfa: %.1.fq.gz %.2.fq.gz
+	mkdir -p working
+	unicycler -t$t --mode bold -o working/$*.unicycler -1 $*.1.fq.gz -2 $*.2.fq.gz 1> working/$*.unicycler.log 2>&1
+	mkdir -p results/assemblies
+	ln -sf $(root)/working/$*.unicycler/assembly.gfa $@
 
 # Copy the FASTA file.
-%.unicycler.fa: %.unicycler.gfa
-	seqtk seq $*.unicycler/assembly.fasta >$@
+results/assemblies/%.unicycler.fa: results/assemblies/%.unicycler.gfa
+	seqtk seq working/$*.unicycler/assembly.fasta >$@
+
+################################################################################
+# spades
+
+# Assembled paired-end reads using spades.
+results/assemblies/%.spades.contigs.fa: %.1.fq.gz %.2.fq.gz
+	mkdir -p working
+	spades.py -t $t -1 $*.1.fq.gz -2 $*.2.fq.gz -o working/$*.spades 1> working/$*.spades.log 2>&1
+	mkdir -p results/assemblies
+	seqtk seq working/$*.spades/contigs.fasta > $@
+	seqtk seq working/$*.spades/scaffolds.fasta > results/assemblies/$*.spades.scaffolds.fa
 
 ################################################################################
 # minimap2
