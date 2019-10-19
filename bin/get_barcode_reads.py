@@ -30,7 +30,7 @@ def main():
                     byte_size = index[barcode][2]
                     out = subprocess.run(
                         ["bgzip", "-b", byte_start, "-s", byte_size, args.reads_file],
-                        capture_output=True,
+                        capture_output=True
                     )
                     if out.returncode == 0:
                         print(out.stdout.decode(), end="")

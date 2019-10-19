@@ -4,6 +4,7 @@ import sys
 import gzip
 import zlib
 import argparse
+import subprocess
 
 parser = argparse.ArgumentParser(
     description="""
@@ -13,7 +14,7 @@ parser = argparse.ArgumentParser(
 """
 )
 parser.add_argument(
-    "reads_filepath", help="Path to the file with reads compressed with bgzip."
+    "reads_file", help="Path to the file with reads compressed with bgzip."
 )
 args = parser.parse_args()
 
@@ -21,15 +22,19 @@ args = parser.parse_args()
 def main():
     try:
         # Test whether reads file is valid
-        with gzip.open(args.reads_filepath) as reads_file:
-            reads_file.read()
+        with gzip.open(args.reads_file) as reads_file:
+            reads_file.read(1)
     except (OSError, EOFError, zlib.error):
         print(
-            "File " + args.reads_filepath + " does not appear to be bgzipped. Exiting."
+            "File " + args.reads_file + " does not appear to be bgzipped. Exiting."
         )
         sys.exit(1)
+    out = subprocess.run(["bgzip", "-b", "1", "-s", "1", args.reads_file], capture_output=True)
+    if out.returncode != 0:
+        print(out.stderr.decode())
+        sys.exit(1)
 
-    with gzip.open(args.reads_filepath) as readsfile_file, open(
+    with gzip.open(args.reads_file) as readsfile_file, open(
         args.reads_filepath + ".bdx", "w"
     ) as idx_file:
         i = 0
