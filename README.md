@@ -3,6 +3,17 @@
 Hackseq 2019 Project 6
 <https://www.hackseq.com/hackseq19#descriptions>
 
+- @sjackman Shaun Jackman (team lead)
+- @afshinfard Amirhossein Afshinfard
+- @aliceZhu Alice Zhu
+- @bernieyiweizhao Bernie Zhao
+- @emreerhan Emre Erhan
+- @gapalm Liubov Gapa
+- @haghshenas Ehsan Haghshenas
+- @schutzekatze Vladimir Nikolić
+- @thezange Aleksis Korhonen
+- @trgibbons Ted Gibbons
+
 # Description
 
 Linked reads from 10x Genomics combine the benefits of large DNA molecules with the sequence fidelity and cost of short read sequencing. We will design a software tool to extract the reads from a set of linked read barcodes and assemble those reads. Multiple targeted assemblies will be combined to assemble an entire chromosome.
@@ -55,9 +66,11 @@ make f1chr4.fq.gz
 
 - How big is chr4?
 - What's the depth of coverage of chr4?
-- Which is the largest Supernova scaffold that maps to chr4? (hint: use minimap2)
+- Which is the largest Supernova scaffold that maps to chr4? (hint: use [minimap2](https://github.com/lh3/minimap2))
 
 # Assemble the fly linked reads using Unicycler
+
+Unicycler is a genome sequence assembly tool. Its intended to be used to assemble a genome using both short reads and long reads. It can also be used to assemble only short reads (using [SPAdes](https://github.com/ablab/spades)) or assembly only long reads (using [miniasm](https://github.com/lh3/miniasm)). We have only short reads for this fly data set.
 
 ```sh
 mkdir ~/work/talr/fly
@@ -67,9 +80,11 @@ nohup time make f1chr4.unicycler.gfa >f1chr4.unicycler.gfa.log
 abyss-fac -t1000 -G1348131 f1chr4.unicycler/assembly.fasta
 ```
 
-What is the NG50 of the Unicycler assembly of f1chr4?
+What is the NG50 of the [Unicycler](https://github.com/rrwick/Unicycler) assembly of f1chr4?
 
 # Visualize the assembly graph using Bandage
+
+[Bandage](https://github.com/rrwick/Bandage) visualizes a genome sequence assembly graph in [GFA1](https://github.com/GFA-spec/GFA-spec/blob/master/GFA1.md) format. We can assess the quality (contiguity and correctness) of the genome assembly by visually inspecting an alignment of the reference genome to the genome assembly graph.
 
 ```sh
 Bandage load f1chr4.unicycler.gfa
@@ -82,9 +97,11 @@ Bandage load f1chr4.unicycler.gfa
 5. Run BLAST search
 6. Close
 
-Do you see any major structural misassemblies?
+Do you see any major structural misassemblies? Look for discontiguities in the colour spectrum of a contig.
 
 # Run Physlr on chr4
+
+[Physlr](https://github.com/bcgsc/physlr) constructs a physical map (an ordered sequence of barcodes) using linked read sequencing.
 
 ```sh
 # Compile Physlr.
