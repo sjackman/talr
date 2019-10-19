@@ -94,29 +94,29 @@ f1chr4.fq.gz:
 # Unicycler
 
 # Assembled paired-end reads using Unicycler.
-results/assemblies/%.unicycler.gfa: %.1.fq.gz %.2.fq.gz
+results/assemblies/%.unicycler.fa: %.1.fq.gz %.2.fq.gz
 	mkdir -p working
 	unicycler -t $t --mode bold -o working/$*.unicycler -1 $*.1.fq.gz -2 $*.2.fq.gz 1> working/$*.unicycler.log 2>&1
 	mkdir -p results/assemblies
-	ln -sf ../../working/$*.unicycler/assembly.gfa $@
+	seqtk seq working/$*.unicycler/assembly.fasta > $@
 
-# Copy the FASTA file.
-results/assemblies/%.unicycler.fa: results/assemblies/%.unicycler.gfa
-	seqtk seq working/$*.unicycler/assembly.fasta >$@
+# link the graph format
+results/assemblies/%.unicycler.gfa: results/assemblies/%.unicycler.fa
+	ln -sf ../../working/$*.unicycler/assembly.gfa $@
 
 ################################################################################
 # spades
 
 # Assembled paired-end reads using spades.
-results/assemblies/%.spades.fastg: %.1.fq.gz %.2.fq.gz
+results/assemblies/%.spades.contigs.fa: %.1.fq.gz %.2.fq.gz
 	mkdir -p working
 	spades.py -t $t -1 $*.1.fq.gz -2 $*.2.fq.gz -o working/$*.spades 1> working/$*.spades.log 2>&1
 	mkdir -p results/assemblies
-	ln -sf ../../working/$*.spades/assembly_graph.fastg $@
-
-results/assemblies/%.spades.contigs.fa: results/assemblies/%.spades.fastg
 	seqtk seq working/$*.spades/contigs.fasta > $@
 	seqtk seq working/$*.spades/scaffolds.fasta > results/assemblies/$*.spades.scaffolds.fa
+
+results/assemblies/%.spades.fastg: results/assemblies/%.spades.contigs.fa
+	ln -sf ../../working/$*.spades/assembly_graph.fastg $@
 
 ################################################################################
 # abyss
