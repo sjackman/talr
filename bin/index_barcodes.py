@@ -4,7 +4,8 @@ import sys
 import gzip
 import argparse
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description="Index the positions of reads corresponding to each barcode. \
+  The output .bdx file is tab separated with columns: barcode, number_of_reads, first_read_byte_position, reads_size_in_bytes")
 parser.add_argument('input_filepath')
 args = parser.parse_args()
 
