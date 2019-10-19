@@ -94,7 +94,7 @@ What is the NG50 of the [Unicycler](https://github.com/rrwick/Unicycler) assembl
 [Bandage](https://github.com/rrwick/Bandage) visualizes a genome sequence assembly graph in [GFA1](https://github.com/GFA-spec/GFA-spec/blob/master/GFA1.md) format. We can assess the quality (contiguity and correctness) of the genome assembly by visually inspecting an alignment of the reference genome to the genome assembly graph.
 
 ```sh
-Bandage load f1chr4.unicycler.gfa
+Bandage load results/assemblies/f1chr4.unicycler.gfa
 ```
 
 1. Draw graph
