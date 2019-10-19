@@ -2,22 +2,36 @@
 
 import sys
 import gzip
+import zlib
 import argparse
 
-parser = argparse.ArgumentParser(description="Index the positions of reads corresponding to each barcode. \
-  The output .bdx file is tab separated with columns: barcode, number_of_reads, first_read_byte_position, reads_size_in_bytes")
-parser.add_argument('input_filepath')
+parser = argparse.ArgumentParser(description="""
+  Index the positions of reads corresponding to each barcode.
+  The output .bdx file is tab separated with columns: barcode, number_of_reads,
+  first_read_byte_position, reads_size_in_bytes.
+""")
+parser.add_argument('reads_filepath', help="Path to the file with reads compressed with bgzip.")
 args = parser.parse_args()
 
 def main():
-  with gzip.open(args.input_filepath) as input_file, open(args.input_filepath + '.bdx', 'w') as idx_file:
+  reads_filepath = args.reads_filepath
+
+  try:
+    # Test whether reads file is valid
+    with gzip.open(reads_filepath) as reads_file:
+      reads_file.read()
+  except (OSError, EOFError, zlib.error):
+      print("File " + reads_filepath + " does not appear to be bgzipped. Exiting.")
+      sys.exit(1)
+
+  with gzip.open(reads_filepath) as readsfile_file, open(reads_filepath + '.bdx', 'w') as idx_file:
     i = 0
     current_barcode = "NA"
     current_no_of_reads = 0
     current_byte_start = 0
     current_byte_size = 0
     line_byte_location = 0
-    for line in input_file:
+    for line in readsfile_file:
       line = line.decode()
 
       if i == 0:
