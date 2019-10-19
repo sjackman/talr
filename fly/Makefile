@@ -134,6 +134,12 @@ results/assemblies/%.abyss.contigs.gfa: results/assemblies/%.abyss.contigs.fa
 	ln -sf ../../working/$*.abyss/assembly-scaffolds.gfa results/assemblies/$*.abyss.scaffolds.gfa
 
 ################################################################################
+# quast
+results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/assemblies/%.spades.contigs.fa results/assemblies/%.unicycler.fa
+	mkdir -p results/quast/quast-$*
+	quast.py --eukaryote -t $t -o results/quast/quast-$* -r flychr4.fa -l abyss-contig,spades-contigs,abyss,spades,unicycler results/assemblies/$*.abyss.contigs.fa results/assemblies/$*.spades.contigs.fa results/assemblies/$*.abyss.scaffolds.fa results/assemblies/$*.spades.scaffolds.fa results/assemblies/$*.unicycler.fa
+
+################################################################################
 # minimap2
 
 # Align a FASTA file to the reference genome and produce a PAF file.
