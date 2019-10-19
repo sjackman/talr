@@ -3,7 +3,7 @@
 # and https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/performance
 
 # Number of threads.
-t=4
+t=16
 
 # Reference genome.
 ref=fly
@@ -96,7 +96,7 @@ f1chr4.fq.gz:
 # Assembled paired-end reads using Unicycler.
 results/assemblies/%.unicycler.gfa: %.1.fq.gz %.2.fq.gz
 	mkdir -p working
-	unicycler -t$t --mode bold -o working/$*.unicycler -1 $*.1.fq.gz -2 $*.2.fq.gz 1> working/$*.unicycler.log 2>&1
+	unicycler -t $t --mode bold -o working/$*.unicycler -1 $*.1.fq.gz -2 $*.2.fq.gz 1> working/$*.unicycler.log 2>&1
 	mkdir -p results/assemblies
 	ln -sf ../../working/$*.unicycler/assembly.gfa $@
 
@@ -124,7 +124,7 @@ results/assemblies/%.spades.contigs.fa: results/assemblies/%.spades.fastg
 # Assembled paired-end reads using abyss.
 results/assemblies/%.abyss.contigs.fa: %.1.fq.gz %.2.fq.gz
 	mkdir -p working/$*.abyss
-	abyss-pe np=16 name=assembly graph=gfa k=112 in='../../$*.1.fq.gz ../../$*.2.fq.gz' -C working/$*.abyss 1> working/$*.abyss.log 2>&1
+	abyss-pe np=$t name=assembly graph=gfa k=112 in='../../$*.1.fq.gz ../../$*.2.fq.gz' -C working/$*.abyss 1> working/$*.abyss.log 2>&1
 	mkdir -p results/assemblies
 	seqtk seq working/$*.abyss/assembly-contigs.fa > $@
 	seqtk seq working/$*.abyss/assembly-scaffolds.fa > results/assemblies/$*.abyss.scaffolds.fa
