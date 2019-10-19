@@ -1,0 +1,164 @@
+import os
+import json
+from collections import namedtuple
+default_config = "config.json"
+if not config and os.path.exists(default_config):
+    with open(default_config) as f:
+        config = json.load(f)
+
+# check required params
+RequiredParam = namedtuple("RequiredParam", ["key", "description"]) 
+required_params = [
+                    RequiredParam("physlr_root",
+                                  "Path to your physlr directory"),
+                    RequiredParam("reads",
+                                  "Path to interleaved chromium reads fq")
+                  ]
+cfg_err = False
+for key, description in required_params:
+    if key not in config:
+        print("Missing configuration key '{}': {}".format(key,
+                                                          description),
+              file=sys.stderr)
+        cfg_err = True
+if cfg_err:
+    exit(1)
+
+# required params
+PHYSLR_ROOT = config.get("physlr_root")
+reads       = config.get("reads")
+
+# optional params
+k = config.get("k", 32) # kmer size
+w = config.get("w", 32) # number of kmers in minimizer window
+t = config.get("t", 16) # threads
+min_mx_count = config.get("n", 100)  # min number of mx per barcode
+max_mx_count = config.get("N", 1000) # max number of mx per barcode
+
+# run completion flag
+experiment = os.path.basename(reads).split(".")[0]
+run_flag_name = "{}_k_{}_w_{}_n_{}_N_{}".format(experiment, k, w,
+                                                min_mx_count,
+                                                max_mx_count)
+
+rule all:
+    input: run_flag_name
+
+# Convert reads into barcode + list of minimizers format.
+minimized_reads = "{}.k{}-w{}.physlr.tsv.gz".format(experiment, k, w)
+rule minimize_reads:
+    input: reads
+    output: minimized_reads
+    shell: """
+    pigz -p{t} -cd {input} | {PHYSLR_ROOT}/src/physlr-indexlr -t4 -k{k} -w{w} \
+    - | pigz -p{t} > {output}
+    """
+
+# Remove singleton minimizers, then remove barcodes with too few or
+# too many minimizers.
+minimized_filtered1 = "{}.k{}-w{}.n{}-{}.physlr.tsv.gz".format(experiment, k, w,
+                                                               min_mx_count,
+                                                               max_mx_count)
+rule filter_barcodes:
+    input: minimized_reads
+    output: minimized_filtered1, "foo.txt"
+    shell: """
+    pigz -p{t} -cd {input} | \
+    {PHYSLR_ROOT}/src/physlr-filter-barcodes -n{min_mx_count} -N{max_mx_count} \
+    - | pigz -p{t} > {output[0]}
+    touch foo.txt
+    """
+
+# Two rounds of removing singleton minimizers, then remove repetitive
+# minimizers. Finally, remove any empty barcodes.
+minimized_filtered2 = "{}.k{}-w{}.n{}-{}.c2-x.physlr.tsv.gz".format(experiment,
+                                                                    k, w,
+                                                                    min_mx_count,
+                                                                    max_mx_count)
+rule filter_minimizers:
+    input: minimized_filtered1
+    output: minimized_filtered2
+    shell: """
+    pigz -p{t} -cd {input} | \
+    {PHYSLR_ROOT}/src/physlr-filter-bxmx -o {output} -
+    """
+
+
+# Build the initial overlap graph.
+overlap_graph = "{}.k{}-w{}.n{}-{}.c2-x.physlr.overlap.tsv".format(experiment,
+                                                                   k, w,
+                                                                   min_mx_count,
+                                                                   max_mx_count)
+rule build_overlap_graph:
+    input: minimized_filtered2
+    output: overlap_graph
+    shell: """
+    {PHYSLR_ROOT}/src/physlr-overlap -t1 -n10 {input} > {output}
+    """
+
+
+# Filter out low overlap counts.
+filtered_overlap_graph = "{}.k{}-w{}.n{}-{}.c2-x.physlr.overlap.n50.tsv".format(
+                                                                   experiment,
+                                                                   k, w,
+                                                                   min_mx_count,
+                                                                   max_mx_count)
+rule filter_low_overlap_counts:
+    input: overlap_graph
+    output: filtered_overlap_graph
+    shell: """
+    mlr --tsvlite filter '$n >= 50' {input} > {output}
+    """
+
+# Separate barcodes into molecules.
+molecule_graph = "{}.k{}-w{}.n{}-{}.c2-x.physlr.overlap.n50.mol.tsv".format(
+                                                                   experiment,
+                                                                   k, w,
+                                                                   min_mx_count,
+                                                                   max_mx_count)
+rule resolve_molecules:
+    input: filtered_overlap_graph
+    output: molecule_graph
+    shell: """
+    env PYTHONPATH={PHYSLR_ROOT} pypy3 {PHYSLR_ROOT}/bin/physlr molecules -V1 \
+    -t{t} --separation-strategy=bc {input} > {output}
+    """
+
+# Determine backbone-induced subgraph.
+backbone_graph = "{}.k{}-w{}.n{}-{}.c2-x.physlr.overlap.n50.mol.backbone.tsv".format(
+                                                                       experiment,
+                                                                       k, w,
+                                                                       min_mx_count,
+                                                                       max_mx_count)
+rule generate_backbone_graph:
+    input: molecule_graph
+    output: backbone_graph
+    shell: """
+    env PYTHONPATH={PHYSLR_ROOT} pypy3 {PHYSLR_ROOT}/bin/physlr backbone-graph \
+    --prune-branches=10 --prune-bridges=10 -s0 {input} > {output}
+    """
+
+# Determine backbone of the graph.
+backbone_path = "{}.k{}-w{}.n{}-{}.c2-x.physlr.overlap.n50.mol.backbone.path".format(
+                                                                       experiment,
+                                                                       k, w,
+                                                                       min_mx_count,
+                                                                       max_mx_count)
+rule determine_backbone_path:
+    input: backbone_graph
+    output: backbone_path
+    shell: """
+    env PYTHONPATH={PHYSLR_ROOT} pypy3 {PHYSLR_ROOT}/bin/physlr backbone \
+    --prune-branches=0 -s0 {input} > {output}
+    """
+
+# Flesh out the barcodes in the backbone paths.
+fleshed_out_backbone_path = os.path.splitext(backbone_path)[0] + ".fleshed.path"
+rule flesh_out_backbone:
+    input: molecule_graph, backbone_path
+    output: fleshed_out_backbone_path, touch(run_flag_name)
+    shell: """
+    env PYTHONPATH={PHYSLR_ROOT} pypy3 {PHYSLR_ROOT}/bin/physlr flesh-backbone \
+    --min-component-size=50 {input[0]} {input[1]} > {output[0]}
+    """
+
