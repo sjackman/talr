@@ -22,7 +22,7 @@ try:
     pfn = sys.argv[1]
     rfn = sys.argv[2]
     # ofn = sys.argv[3]
-except IndexError as ie:
+except IndexError:
     raise SystemError("Error: Specify file name\n")
 
 if not os.path.exists(pfn):
@@ -62,7 +62,7 @@ iter = 0
 if not os.path.exists(pfn + "_reads/"):
     try:
         os.mkdir(pfn + "_reads/")
-    except IndexError as ie:
+    except IndexError:
         raise SystemError("Error: Could not make the directory.\n")
 
 for chunk_reads in chunks_reads:
