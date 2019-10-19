@@ -1,0 +1,55 @@
+import os
+import json
+from collections import namedtuple
+default_config = "config.json"
+if not config and os.path.exists(default_config):
+    with open(default_config) as f:
+        config = json.load(f)
+
+# check required params
+RequiredParam = namedtuple("RequiredParam", ["key", "description"]) 
+required_params = [
+                    RequiredParam("physlr_root",
+                                  "Path to your physlr directory"),
+                    RequiredParam("talr_root",
+                                  "Path to your talr directory"),
+                    RequiredParam("fleshed_path",
+                                  "Path to fleshed out backbone path file")
+                  ]
+cfg_err = False
+for key, description in required_params:
+    if key not in config:
+        print("Missing configuration key '{}': {}".format(key,
+                                                          description),
+              file=sys.stderr)
+        cfg_err = True
+if cfg_err:
+    exit(1)
+
+# required params
+PHYSLR_ROOT  = config.get("physlr_root")
+TALR_ROOT    = config.get("talr_root")
+fleshed_path = config.get("fleshed_path")
+
+# optional params
+n = config.get("n", 20)  # number of smaller paths
+r = config.get("r", 0.5) # overlap ratio
+
+# run completion flag
+experiment = os.path.basename(fleshed_path).split(".")[0]
+run_flag_name = "{}_n_{}_r_{}_run_complete.txt".format(experiment, n, r)
+
+rule all:
+    input: run_flag_name
+
+# Chunk fleshed backbone into n parts
+chunked_path = (os.path.splitext(os.path.basename(fleshed_path))[0] + 
+	        ".chunked.{}_{}.path".format(n, r))
+rule chunk_fleshed_backbone:
+    input: fleshed_path
+    output: chunked_path, touch(run_flag_name)
+    shell: """
+    pypy3 {TALR_ROOT}/amirhossein/chunk_fleshed_backbone.py {input} {n} {r} \
+    > {output[0]}
+    """
+
