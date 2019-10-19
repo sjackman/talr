@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 # file=open("../f1chr4.k32-w32.n100-1000.c2-x.physlr.overlap.n50.mol.backbone.fleshed.path", mode='r')
 #file_fleshed_backbones = "../f1chr4.k32-w32.n100-1000.c2-x.physlr.overlap.n50.mol.backbone.fleshed.path"#sys.argv[1]
