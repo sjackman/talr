@@ -33,11 +33,9 @@ Bandage load results/assemblies/f1chr4.unicycler.gfa
 ### Scaffolding assemblies using ARCS
 One could think of improving assemblies obtained from non-LR-aware assemblers by scaffolding them using linked reads. This can be done using [ARCS](https://github.com/bcgsc/arcs) which is designed specifically to scaffold draft assemblies using linked reads. These assemblies can be obtained by running the following commands:
 ```
-make results/arcs-abyss-scaffold/f1chr4.unicycler.fa
-make results/arcs-abyss-scaffold/f1chr4.spades.contigs.fa
-make results/arcs-abyss-scaffold/f1chr4.spades.scaffolds.fa
-make results/arcs-abyss-scaffold/f1chr4.abyss.contigs.fa
-make results/arcs-abyss-scaffold/f1chr4.abyss.scaffolds.fa
+make unicycler-arcs
+make spades-arcs
+make abyss-arcs
 ```
 
 ### LR-aware assemblers
