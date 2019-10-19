@@ -6,19 +6,19 @@ is:
 2. Set up `config.json` with parameters specific to snakefile
 3. Run pipeline
 
-# backbone_path.snake
+## backbone_path.snake
 This snakefile is for generating the `.backbone.fleshed.path` file.
 
-## Required parameters
+### Required parameters
 Key | Description
 --- | ---
 `physlr_root` | path to your physlr repo
 `reads` | path to the reads that you wish to run through physlr
 
-# read_extract.snake
+## read_extract.snake
 This snakefile is for extracting reads given a `.backbone.fleshed.path` file.
 
-## Required parameters
+### Required parameters
 Key | Description
 --- | ---
 `physlr_root` | path to your physlr repo
