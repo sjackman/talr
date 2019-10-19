@@ -82,9 +82,9 @@ Unicycler is a genome sequence assembly tool. Its intended to be used to assembl
 ```sh
 mkdir ~/work/talr/fly
 cd ~/work/talr/fly
-# Unicycler will take ~75 minutes.
-nohup time make f1chr4.unicycler.gfa >f1chr4.unicycler.gfa.log
-abyss-fac -t1000 -G1348131 f1chr4.unicycler/assembly.fasta
+# Unicycler will take ~75 minutes with 4 cores.
+nohup time make unicycler > f1chr4.unicycler.gfa.log
+abyss-fac -t1000 -G1348131 results/assemblies/f1chr4.unicycler.fa
 ```
 
 What is the NG50 of the [Unicycler](https://github.com/rrwick/Unicycler) assembly of f1chr4? [NG50](https://en.wikipedia.org/wiki/N50,_L50,_and_related_statistics) is a metric of genome sequence assembly contiguity.
