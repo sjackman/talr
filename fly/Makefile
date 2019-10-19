@@ -2,11 +2,9 @@
 # See https://support.10xgenomics.com/de-novo-assembly/datasets/2.1.0/fly
 # and https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/performance
 
-# CURRENT DIRECTORY
-root := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-
 # Number of threads.
-t=6
+# If you want more, just specify it at runtime like so: "make t=8 <target>"
+t=4
 
 # Reference genome.
 ref=fly
@@ -99,9 +97,9 @@ f1chr4.fq.gz:
 # Assembled paired-end reads using Unicycler.
 results/assemblies/%.unicycler.gfa: %.1.fq.gz %.2.fq.gz
 	mkdir -p working
-	unicycler -t$t --mode bold -o working/$*.unicycler -1 $*.1.fq.gz -2 $*.2.fq.gz 1> working/$*.unicycler.log 2>&1
+	unicycler -t $t --mode bold -o working/$*.unicycler -1 $*.1.fq.gz -2 $*.2.fq.gz 1> working/$*.unicycler.log 2>&1
 	mkdir -p results/assemblies
-	ln -sf $(root)/working/$*.unicycler/assembly.gfa $@
+	ln -sf ../../working/$*.unicycler/assembly.gfa $@
 
 # Copy the FASTA file.
 results/assemblies/%.unicycler.fa: results/assemblies/%.unicycler.gfa
@@ -111,12 +109,36 @@ results/assemblies/%.unicycler.fa: results/assemblies/%.unicycler.gfa
 # spades
 
 # Assembled paired-end reads using spades.
-results/assemblies/%.spades.contigs.fa: %.1.fq.gz %.2.fq.gz
+results/assemblies/%.spades.fastg: %.1.fq.gz %.2.fq.gz
 	mkdir -p working
 	spades.py -t $t -1 $*.1.fq.gz -2 $*.2.fq.gz -o working/$*.spades 1> working/$*.spades.log 2>&1
 	mkdir -p results/assemblies
+	ln -sf ../../working/$*.spades/assembly_graph.fastg $@
+
+results/assemblies/%.spades.contigs.fa: results/assemblies/%.spades.fastg
 	seqtk seq working/$*.spades/contigs.fasta > $@
 	seqtk seq working/$*.spades/scaffolds.fasta > results/assemblies/$*.spades.scaffolds.fa
+
+################################################################################
+# abyss
+
+# Assembled paired-end reads using abyss.
+results/assemblies/%.abyss.contigs.fa: %.1.fq.gz %.2.fq.gz
+	mkdir -p working/$*.abyss
+	abyss-pe np=$t name=assembly graph=gfa k=112 in='../../$*.1.fq.gz ../../$*.2.fq.gz' -C working/$*.abyss 1> working/$*.abyss.log 2>&1
+	mkdir -p results/assemblies
+	seqtk seq working/$*.abyss/assembly-contigs.fa > $@
+	seqtk seq working/$*.abyss/assembly-scaffolds.fa > results/assemblies/$*.abyss.scaffolds.fa
+
+results/assemblies/%.abyss.contigs.gfa: results/assemblies/%.abyss.contigs.fa
+	ln -sf ../../working/$*.abyss/assembly-contigs.gfa $@
+	ln -sf ../../working/$*.abyss/assembly-scaffolds.gfa results/assemblies/$*.abyss.scaffolds.gfa
+
+################################################################################
+# quast
+results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/assemblies/%.spades.contigs.fa results/assemblies/%.unicycler.fa
+	mkdir -p results/quast/quast-$*
+	quast.py --eukaryote -t $t -o results/quast/quast-$* -r flychr4.fa -l abyss-contig,spades-contigs,abyss,spades,unicycler results/assemblies/$*.abyss.contigs.fa results/assemblies/$*.spades.contigs.fa results/assemblies/$*.abyss.scaffolds.fa results/assemblies/$*.spades.scaffolds.fa results/assemblies/$*.unicycler.fa
 
 ################################################################################
 # minimap2
