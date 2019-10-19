@@ -85,7 +85,7 @@ nohup time make f1chr4.unicycler.gfa >f1chr4.unicycler.gfa.log
 abyss-fac -t1000 -G1348131 f1chr4.unicycler/assembly.fasta
 ```
 
-What is the NG50 of the [Unicycler](https://github.com/rrwick/Unicycler) assembly of f1chr4?
+What is the NG50 of the [Unicycler](https://github.com/rrwick/Unicycler) assembly of f1chr4? [NG50](https://en.wikipedia.org/wiki/N50,_L50,_and_related_statistics) is a metric of genome sequence assembly contiguity.
 
 # Visualize the assembly graph using Bandage
 
