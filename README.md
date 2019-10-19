@@ -125,3 +125,7 @@ ln -sf fly.ensembl.chr.fa fly/fly.fa
 # Physlr will take ~10 minutes.
 nohup time make t=4 ref=fly lr=f1chr4 draft=f1.supernova.scaftigs n=50 f1chr4.k32-w32.n100-1000.c2-x.physlr.overlap.n50.mol.backbone.fleshed.path >f1chr4.k32-w32.n100-1000.c2-x.physlr.overlap.n50.mol.backbone.fleshed.path.log
 ```
+
+# Additional Documentation
+
+- [doc/chunk_fleshed_backbones.md](doc/chunk_fleshed_backbones.md)
