@@ -22,5 +22,5 @@ for backbone in fleshed_backbones:
 for chunks in chunkss:
     for chunk in chunks:
         for mol in chunk:
-            print(mol, end = ' ', file=sys.stdout)
+            print(mol.split("_")[0], end = ' ', file=sys.stdout)
         print(file=sys.stdout)
