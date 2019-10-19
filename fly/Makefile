@@ -97,9 +97,9 @@ f1chr4.fq.gz:
 
 ################################################################################
 # ASSEMBLIES
-unicycler: results/assemblies/$(sample).unicycler.fa
-spades: results/assemblies/$(sample).spades.contigs.fa
-abyss: results/assemblies/$(sample).abyss.contigs.fa
+unicycler: results/assemblies/$(sample).unicycler.fa results/assemblies/$(sample).unicycler.gfa
+spades: results/assemblies/$(sample).spades.contigs.fa results/assemblies/$(sample).spades.fastg
+abyss: results/assemblies/$(sample).abyss.contigs.fa results/assemblies/$(sample).abyss.contigs.gfa
 unicycler-arcs: results/arcs-abyss-scaffold/$(sample).unicycler.fa
 spades-arcs: results/arcs-abyss-scaffold/$(sample).spades.contigs.fa results/arcs-abyss-scaffold/$(sample).spades.scaffolds.fa
 abyss-arcs: results/arcs-abyss-scaffold/$(sample).abyss.contigs.fa results/arcs-abyss-scaffold/$(sample).abyss.scaffolds.fa
