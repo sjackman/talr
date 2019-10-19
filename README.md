@@ -70,6 +70,8 @@ make f1chr4.fq.gz
 
 # Assemble the fly linked reads using Unicycler
 
+Unicycler is a genome sequence assembly tool. Its intended to be used to assemble a genome using both short reads and long reads. It can also be used to assemble only short reads (using [SPAdes](https://github.com/ablab/spades)) or assembly only long reads (using [miniasm](https://github.com/lh3/miniasm)). We have only short reads for this fly data set.
+
 ```sh
 mkdir ~/work/talr/fly
 cd ~/work/talr/fly
@@ -82,6 +84,8 @@ What is the NG50 of the [Unicycler](https://github.com/rrwick/Unicycler) assembl
 
 # Visualize the assembly graph using Bandage
 
+[Bandage](https://github.com/rrwick/Bandage) visualizes a genome sequence assembly graph in [GFA1](https://github.com/GFA-spec/GFA-spec/blob/master/GFA1.md) format. We can assess the quality (contiguity and correctness) of the genome assembly by visually inspecting an alignment of the reference genome to the genome assembly graph.
+
 ```sh
 Bandage load f1chr4.unicycler.gfa
 ```
@@ -93,9 +97,11 @@ Bandage load f1chr4.unicycler.gfa
 5. Run BLAST search
 6. Close
 
-Do you see any major structural misassemblies using [Bandage](https://github.com/rrwick/Bandage)?
+Do you see any major structural misassemblies? Look for discontiguities in the colour spectrum of a contig.
 
 # Run Physlr on chr4
+
+[Physlr](https://github.com/bcgsc/physlr) constructs a physical map (an ordered sequence of barcodes) using linked read sequencing.
 
 ```sh
 # Compile Physlr.
