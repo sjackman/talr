@@ -175,12 +175,22 @@ results/arcs-abyss-scaffold/%.fa: results/assemblies/%.fa
 	mkdir -p results/arcs-abyss-scaffold
 	ln -sf ../../working/arcs-abyss-scaffold/$*.arcs.fa $@
 
-
 ################################################################################
 # quast
 results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/assemblies/%.spades.contigs.fa results/assemblies/%.unicycler.fa results/arcs-abyss-scaffold/%.abyss.contigs.fa results/arcs-abyss-scaffold/%.spades.contigs.fa results/arcs-abyss-scaffold/%.unicycler.fa 
 	mkdir -p results/quast/quast-$*
 	quast.py --eukaryote -t $t -o results/quast/quast-$* -r flychr4.fa -l abyss-contig,spades-contigs,abyss,spades,unicycler,abyss-contig-arcs,spades-contigs-arcs,abyss-arcs,spades-arcs,unicycler-arcs results/assemblies/$*.abyss.contigs.fa results/assemblies/$*.spades.contigs.fa results/assemblies/$*.abyss.scaffolds.fa results/assemblies/$*.spades.scaffolds.fa results/assemblies/$*.unicycler.fa results/arcs-abyss-scaffold/$*.abyss.contigs.fa results/arcs-abyss-scaffold/$*.spades.contigs.fa results/arcs-abyss-scaffold/$*.abyss.scaffolds.fa results/arcs-abyss-scaffold/$*.spades.scaffolds.fa results/arcs-abyss-scaffold/$*.unicycler.fa 
+
+################################################################################
+# Bandage
+
+# Render an assembly graph using Bandage to PNG.
+%.gfa.png: %.gfa
+	Bandage image $< $@
+
+# Render an assembly graph using Bandage to SVG.
+%.gfa.svg: %.gfa
+	Bandage image $< $@
 
 ################################################################################
 # minimap2
