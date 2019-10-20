@@ -22,11 +22,18 @@ parser.add_argument(
     the script will get barcodes for all sequences.",
 )
 parser.add_argument(
-    "-t",
-    "--threshold",
+    "-b",
+    "--barcode-threshold",
     help="Minimum mapped reads with the same barcode required for a barcode to be included.",
     type=int,
-    default=3,
+    default=2,
+)
+parser.add_argument(
+    "-m",
+    "--mapq-threshold",
+    help="Minimum mapping quality to consider a read.",
+    type=int,
+    default=40,
 )
 args = parser.parse_args()
 
@@ -37,6 +44,7 @@ def main():
     ) as reads_file:
 
         read2seq = {}
+        read2map_quality = {}
         seq_barcodes = {}
 
         for line in alignment_file:
@@ -47,9 +55,19 @@ def main():
             if len(tokens) >= 11:
                 read_name = tokens[0]
                 seq_name = tokens[2]
+                map_quality = int(tokens[4])
+
+                if map_quality < args.mapq_threshold:
+                    continue
 
                 if args.seq_names == None or seq_name in args.seq_names:
-                    read2seq[read_name] = seq_name
+                    if read_name in read2seq:
+                        if map_quality > read2map_quality[read_name]:
+                            read2seq[read_name] = seq_name
+                            read2map_quality[read_name] = map_quality
+                    else:
+                        read2seq[read_name] = seq_name
+                        read2map_quality[read_name] = map_quality
 
         i = 0
         for line in reads_file:
@@ -77,7 +95,7 @@ def main():
         print(seq + "\t", end="")
         barcodes = seq_barcodes[seq]
         for i, barcode in enumerate(sorted(barcodes)):
-            if barcodes[barcode] >= args.threshold:
+            if barcodes[barcode] >= args.barcode_threshold:
                 if i > 0:
                     print(",", end="")
                 print(barcode, end="")
