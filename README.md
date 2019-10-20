@@ -1,3 +1,5 @@
+![Talr logo](talr.png)
+
 # Talr: Targeted Assembly of Linked Reads
 
 Hackseq 2019 Project 6
