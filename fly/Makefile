@@ -299,6 +299,31 @@ results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/
 ################################################################################
 # Concatenate chunked assemblies
 
+# Concatenate chunked SPAdes assemblies.
+f1chr4.chunked.spades.fa: \
+		results/assemblies/f1chr4.00.spades.scaffolds.fa \
+		results/assemblies/f1chr4.01.spades.scaffolds.fa \
+		results/assemblies/f1chr4.02.spades.scaffolds.fa \
+		results/assemblies/f1chr4.03.spades.scaffolds.fa \
+		results/assemblies/f1chr4.04.spades.scaffolds.fa \
+		results/assemblies/f1chr4.05.spades.scaffolds.fa \
+		results/assemblies/f1chr4.06.spades.scaffolds.fa \
+		results/assemblies/f1chr4.07.spades.scaffolds.fa \
+		results/assemblies/f1chr4.08.spades.scaffolds.fa \
+		results/assemblies/f1chr4.09.spades.scaffolds.fa \
+		results/assemblies/f1chr4.10.spades.scaffolds.fa \
+		results/assemblies/f1chr4.11.spades.scaffolds.fa \
+		results/assemblies/f1chr4.12.spades.scaffolds.fa \
+		results/assemblies/f1chr4.13.spades.scaffolds.fa \
+		results/assemblies/f1chr4.14.spades.scaffolds.fa \
+		results/assemblies/f1chr4.15.spades.scaffolds.fa \
+		results/assemblies/f1chr4.16.spades.scaffolds.fa \
+		results/assemblies/f1chr4.17.spades.scaffolds.fa \
+		results/assemblies/f1chr4.18.spades.scaffolds.fa \
+		results/assemblies/f1chr4.19.spades.scaffolds.fa
+	cat $^ | seqtk rename >$@
+
+# Concatenate chunked Unicycler assemblies.
 f1chr4.chunked.unicycler.fa: \
 		results/assemblies/f1chr4.00.unicycler.fa \
 		results/assemblies/f1chr4.01.unicycler.fa \
@@ -326,7 +351,7 @@ f1chr4.chunked.unicycler.fa: \
 # miniasm
 
 # Assemble long reads with Miniasm.
-%.minimap2.miniasm.gfa: %.fa %.minimap2.paf.gz
+%.miniasm.gfa: %.fa %.minimap2.paf.gz
 	miniasm -1 -2 -c1 -e1 -f $^ >$@
 
 # Convert GFA to FASTA.
