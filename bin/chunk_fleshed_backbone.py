@@ -19,13 +19,17 @@ for line in lines:
     )
 
 total = sum(len(i) for i in fleshed_backbones)
-b_per_c = int(total / (overlap_ratio * (chunks_count - 1)))
-overlap = int(overlap_ratio * b_per_c)
+chunk_size = round(total / ((chunks_count - 1) * (1 - overlap_ratio) + 1))
+step_size = int((1 - overlap_ratio) * chunk_size)
 
 chunkss = []
 for backbone in fleshed_backbones:
     chunkss.append(
-        [backbone[i : i + b_per_c] for i in range(0, len(backbone), b_per_c - overlap)]
+        [
+            backbone[i : i + chunk_size]
+            for i in range(0, len(backbone), step_size)
+            if i + chunk_size < total
+        ]
     )
 
 for chunks in chunkss:
