@@ -205,7 +205,7 @@ results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/
 	bgzip -r $<
 
 # Index a bgzipped FASTQ file.
-%.fq.gz.bdx: %.fq.gz
+%.fq.gz.bdx: %.fq.gz %.fq.gz.gzi
 	../bin/index_barcodes.py $<
 
 # Split a Physlr fleshed-out backbone path into equal-sized chunks.
