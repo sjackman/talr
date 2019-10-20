@@ -53,14 +53,14 @@ def import_bdx(bdx_file):
                 3. Length of read data in bgzip'd FASTQ file
     """
     bdx = {}
-    with open(bdx_file, 'r') as fin:
+    with open(bdx_file, "r") as fin:
         for line in fin:
             temp = line.strip().split()
             if not temp:
                 continue
             bdx[temp[0]] = temp[1:4]
 
-    return(bdx)
+    return bdx
 
 
 def scrub_bdx(bdx):
@@ -105,15 +105,19 @@ def import_path(path_file, bdx):
                 continue
 
             # Strip flesh from backbone
-            bb_barcodes = [b for b in seq_path if not b.startswith('(')]
+            bb_barcodes = [b for b in seq_path if not b.startswith("(")]
 
             # Re-fleshify vertebrae
-            seq_fbb = OrderedDict([(b, fleshify_vertebra(seq_path=seq_path, bdx=bdx, vertebra=b))
-                                   for b in bb_barcodes])
+            seq_fbb = OrderedDict(
+                [
+                    (b, fleshify_vertebra(seq_path=seq_path, bdx=bdx, vertebra=b))
+                    for b in bb_barcodes
+                ]
+            )
 
             fbb.append(seq_fbb)
 
-    return(fbb)
+    return fbb
 
 
 def fleshify_vertebra(seq_path, bdx, vertebra):
@@ -137,18 +141,18 @@ def fleshify_vertebra(seq_path, bdx, vertebra):
 
     # Return empty overlap list if we reach the end of the path list for this sequence
     except IndexError:
-        return([])
+        return []
 
     # Return empty list if next item is another vertebra instead  of a list of overlapping GEM barcodes
-    if not olap_bars.startswith('('):
-        return([])
+    if not olap_bars.startswith("("):
+        return []
 
     # Gather and format information for vertebra and any overlapping GEMs
-    olap_bars = olap_bars.strip('()').split(',')
-    olap_dict = {b: bdx[b.split('_')[0]] for b in olap_bars}
-    vertebral_flesh = bdx[vertebra.split('_')[0]] + [olap_dict]
+    olap_bars = olap_bars.strip("()").split(",")
+    olap_dict = {b: bdx[b.split("_")[0]] for b in olap_bars}
+    vertebral_flesh = bdx[vertebra.split("_")[0]] + [olap_dict]
 
-    return(vertebral_flesh)
+    return vertebral_flesh
 
 
 def subset_reads(fqbgz, bdx, barcode):
@@ -162,44 +166,45 @@ def subset_reads(fqbgz, bdx, barcode):
     Returns:
         reads: String containing data for reads corresponding to GEM
     """
-    offset, size = bdx[barcode.split('_')[0]][1:3]
+    offset, size = bdx[barcode.split("_")[0]][1:3]
     out = sp.run(["bgzip", "-b", offset, "-s", size, fqbgz], capture_output=True)
     reads = out.stdout.decode()
-    return(reads)
+    return reads
 
 
 def get_parse_args():
     """Parse commandline arguments and options"""
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description="Subset bgzip'd FASTQ file using linked read barcode")
+        description="Subset bgzip'd FASTQ file using linked read barcode",
+    )
 
-    parser.add_argument('path',
-                        type=str,
-                        help="A .backbone.fleshed.path file from Physlr")
+    parser.add_argument(
+        "path", type=str, help="A .backbone.fleshed.path file from Physlr"
+    )
 
-    parser.add_argument('fqbgz',
-                        type=str,
-                        help="A bgzip'd (not gzip'd) FASTQ file")
+    parser.add_argument("fqbgz", type=str, help="A bgzip'd (not gzip'd) FASTQ file")
 
-    parser.add_argument('bdx',
-                        type=str,
-                        help="A .bdx index file for a bgzip'd (not gzip'd) FASTQ file")
+    parser.add_argument(
+        "bdx", type=str, help="A .bdx index file for a bgzip'd (not gzip'd) FASTQ file"
+    )
 
-    parser.add_argument('-o', '--outfile',
-                        type=argparse.FileType('w'),
-                        default=sys.stdout,
-                        help="Output FASTQ file")
+    parser.add_argument(
+        "-o",
+        "--outfile",
+        type=argparse.FileType("w"),
+        default=sys.stdout,
+        help="Output FASTQ file",
+    )
 
     # TODO: Add parameters for # chunks and overlap fraction
 
     args = parser.parse_args()
     return args
 
+
 if __name__ == "__main__":
     sys.exit(main())
-
-
 
 
 # bgzip -r fly/f1chr4.1.fq.gz
