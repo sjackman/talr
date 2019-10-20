@@ -259,6 +259,10 @@ results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/
 %.$(ref).sam.gz: $(ref).fa %.fa
 	$(time) minimap2 -t$t -xasm10 -a $^ | $(gzip) >$@
 
+# Overlap sequences with Minimap2 and produce a PAF file.
+%.minimap2.paf.gz: %.fa
+	$(time) minimap2 -t$t -xava-ont $< $< | $(gzip) >$@
+
 ################################################################################
 # Talr
 
@@ -291,3 +295,40 @@ results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/
 		printf "="; \
 	done
 	echo
+
+################################################################################
+# Concatenate chunked assemblies
+
+f1chr4.chunked.unicycler.fa: \
+		results/assemblies/f1chr4.00.unicycler.fa \
+		results/assemblies/f1chr4.01.unicycler.fa \
+		results/assemblies/f1chr4.02.unicycler.fa \
+		results/assemblies/f1chr4.03.unicycler.fa \
+		results/assemblies/f1chr4.04.unicycler.fa \
+		results/assemblies/f1chr4.05.unicycler.fa \
+		results/assemblies/f1chr4.06.unicycler.fa \
+		results/assemblies/f1chr4.07.unicycler.fa \
+		results/assemblies/f1chr4.08.unicycler.fa \
+		results/assemblies/f1chr4.09.unicycler.fa \
+		results/assemblies/f1chr4.10.unicycler.fa \
+		results/assemblies/f1chr4.11.unicycler.fa \
+		results/assemblies/f1chr4.12.unicycler.fa \
+		results/assemblies/f1chr4.13.unicycler.fa \
+		results/assemblies/f1chr4.14.unicycler.fa \
+		results/assemblies/f1chr4.15.unicycler.fa \
+		results/assemblies/f1chr4.16.unicycler.fa \
+		results/assemblies/f1chr4.17.unicycler.fa \
+		results/assemblies/f1chr4.18.unicycler.fa \
+		results/assemblies/f1chr4.19.unicycler.fa
+	cat $^ | seqtk rename >$@
+
+################################################################################
+# miniasm
+
+# Assemble long reads with Miniasm.
+%.minimap2.miniasm.gfa: %.fa %.minimap2.paf.gz
+	miniasm -1 -2 -c1 -e1 -f $^ >$@
+
+# Convert GFA to FASTA.
+%.miniasm.fa: %.miniasm.gfa
+	awk '/^S/ { print ">" $$2 " " $$4 "\n" $$3 }' $< >$@
