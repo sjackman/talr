@@ -2,8 +2,6 @@
 
 import sys
 
-# file=open("../f1chr4.k32-w32.n100-1000.c2-x.physlr.overlap.n50.mol.backbone.fleshed.path", mode='r')
-# file_fleshed_backbones = "../f1chr4.k32-w32.n100-1000.c2-x.physlr.overlap.n50.mol.backbone.fleshed.path"#sys.argv[1]
 file_fleshed_backbones = sys.argv[1]
 chunks_count = int(sys.argv[2])
 overlap_ratio = float(sys.argv[3])
