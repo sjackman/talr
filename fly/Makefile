@@ -24,7 +24,37 @@ abyss_k=112
 
 .DELETE_ON_ERROR:
 .SECONDARY:
+
 all:
+
+# Assemble the chunks with Unicycler.
+assemble-chunks-unicycler: \
+	results/assemblies/f1chr4.00.unicycler.gfa \
+	results/assemblies/f1chr4.01.unicycler.gfa \
+	results/assemblies/f1chr4.02.unicycler.gfa \
+	results/assemblies/f1chr4.03.unicycler.gfa \
+	results/assemblies/f1chr4.04.unicycler.gfa \
+	results/assemblies/f1chr4.05.unicycler.gfa \
+	results/assemblies/f1chr4.06.unicycler.gfa \
+	results/assemblies/f1chr4.07.unicycler.gfa \
+	results/assemblies/f1chr4.08.unicycler.gfa \
+	results/assemblies/f1chr4.09.unicycler.gfa \
+	results/assemblies/f1chr4.10.unicycler.gfa \
+	results/assemblies/f1chr4.11.unicycler.gfa \
+	results/assemblies/f1chr4.12.unicycler.gfa \
+	results/assemblies/f1chr4.13.unicycler.gfa \
+	results/assemblies/f1chr4.14.unicycler.gfa \
+	results/assemblies/f1chr4.15.unicycler.gfa \
+	results/assemblies/f1chr4.16.unicycler.gfa \
+	results/assemblies/f1chr4.17.unicycler.gfa \
+	results/assemblies/f1chr4.18.unicycler.gfa \
+	results/assemblies/f1chr4.19.unicycler.gfa
+
+# Visualize the chunks assembled with Unicycler using Bandage.
+bandage-chunks-unicycler:
+	for i in results/assemblies/f1chr4.??.unicycler.gfa; do \
+		Bandage load $$i --draw --colour blastrainbow --query flychr4.fa & \
+	done
 
 ################################################################################
 # Download data
