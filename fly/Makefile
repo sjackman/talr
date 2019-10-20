@@ -27,6 +27,29 @@ abyss_k=112
 
 all:
 
+# Assemble the chunks with SPAdes.
+assemble-chunks-spades: \
+	results/assemblies/f1chr4.00.spades.contigs.fa \
+	results/assemblies/f1chr4.01.spades.contigs.fa \
+	results/assemblies/f1chr4.02.spades.contigs.fa \
+	results/assemblies/f1chr4.03.spades.contigs.fa \
+	results/assemblies/f1chr4.04.spades.contigs.fa \
+	results/assemblies/f1chr4.05.spades.contigs.fa \
+	results/assemblies/f1chr4.06.spades.contigs.fa \
+	results/assemblies/f1chr4.07.spades.contigs.fa \
+	results/assemblies/f1chr4.08.spades.contigs.fa \
+	results/assemblies/f1chr4.09.spades.contigs.fa \
+	results/assemblies/f1chr4.10.spades.contigs.fa \
+	results/assemblies/f1chr4.11.spades.contigs.fa \
+	results/assemblies/f1chr4.12.spades.contigs.fa \
+	results/assemblies/f1chr4.13.spades.contigs.fa \
+	results/assemblies/f1chr4.14.spades.contigs.fa \
+	results/assemblies/f1chr4.15.spades.contigs.fa \
+	results/assemblies/f1chr4.16.spades.contigs.fa \
+	results/assemblies/f1chr4.17.spades.contigs.fa \
+	results/assemblies/f1chr4.18.spades.contigs.fa \
+	results/assemblies/f1chr4.19.spades.contigs.fa
+
 # Assemble the chunks with Unicycler.
 assemble-chunks-unicycler: \
 	results/assemblies/f1chr4.00.unicycler.gfa \
