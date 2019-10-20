@@ -29,49 +29,49 @@ all:
 
 # Assemble the chunks with SPAdes.
 assemble-chunks-spades: \
-	results/assemblies/f1chr4.00.spades.contigs.fa \
-	results/assemblies/f1chr4.01.spades.contigs.fa \
-	results/assemblies/f1chr4.02.spades.contigs.fa \
-	results/assemblies/f1chr4.03.spades.contigs.fa \
-	results/assemblies/f1chr4.04.spades.contigs.fa \
-	results/assemblies/f1chr4.05.spades.contigs.fa \
-	results/assemblies/f1chr4.06.spades.contigs.fa \
-	results/assemblies/f1chr4.07.spades.contigs.fa \
-	results/assemblies/f1chr4.08.spades.contigs.fa \
-	results/assemblies/f1chr4.09.spades.contigs.fa \
-	results/assemblies/f1chr4.10.spades.contigs.fa \
-	results/assemblies/f1chr4.11.spades.contigs.fa \
-	results/assemblies/f1chr4.12.spades.contigs.fa \
-	results/assemblies/f1chr4.13.spades.contigs.fa \
-	results/assemblies/f1chr4.14.spades.contigs.fa \
-	results/assemblies/f1chr4.15.spades.contigs.fa \
-	results/assemblies/f1chr4.16.spades.contigs.fa \
-	results/assemblies/f1chr4.17.spades.contigs.fa \
-	results/assemblies/f1chr4.18.spades.contigs.fa \
-	results/assemblies/f1chr4.19.spades.contigs.fa
+	results/assemblies/f1chr4.00.spades.gfa.png \
+	results/assemblies/f1chr4.01.spades.gfa.png \
+	results/assemblies/f1chr4.02.spades.gfa.png \
+	results/assemblies/f1chr4.03.spades.gfa.png \
+	results/assemblies/f1chr4.04.spades.gfa.png \
+	results/assemblies/f1chr4.05.spades.gfa.png \
+	results/assemblies/f1chr4.06.spades.gfa.png \
+	results/assemblies/f1chr4.07.spades.gfa.png \
+	results/assemblies/f1chr4.08.spades.gfa.png \
+	results/assemblies/f1chr4.09.spades.gfa.png \
+	results/assemblies/f1chr4.10.spades.gfa.png \
+	results/assemblies/f1chr4.11.spades.gfa.png \
+	results/assemblies/f1chr4.12.spades.gfa.png \
+	results/assemblies/f1chr4.13.spades.gfa.png \
+	results/assemblies/f1chr4.14.spades.gfa.png \
+	results/assemblies/f1chr4.15.spades.gfa.png \
+	results/assemblies/f1chr4.16.spades.gfa.png \
+	results/assemblies/f1chr4.17.spades.gfa.png \
+	results/assemblies/f1chr4.18.spades.gfa.png \
+	results/assemblies/f1chr4.19.spades.gfa
 
 # Assemble the chunks with Unicycler.
 assemble-chunks-unicycler: \
-	results/assemblies/f1chr4.00.unicycler.gfa \
-	results/assemblies/f1chr4.01.unicycler.gfa \
-	results/assemblies/f1chr4.02.unicycler.gfa \
-	results/assemblies/f1chr4.03.unicycler.gfa \
-	results/assemblies/f1chr4.04.unicycler.gfa \
-	results/assemblies/f1chr4.05.unicycler.gfa \
-	results/assemblies/f1chr4.06.unicycler.gfa \
-	results/assemblies/f1chr4.07.unicycler.gfa \
-	results/assemblies/f1chr4.08.unicycler.gfa \
-	results/assemblies/f1chr4.09.unicycler.gfa \
-	results/assemblies/f1chr4.10.unicycler.gfa \
-	results/assemblies/f1chr4.11.unicycler.gfa \
-	results/assemblies/f1chr4.12.unicycler.gfa \
-	results/assemblies/f1chr4.13.unicycler.gfa \
-	results/assemblies/f1chr4.14.unicycler.gfa \
-	results/assemblies/f1chr4.15.unicycler.gfa \
-	results/assemblies/f1chr4.16.unicycler.gfa \
-	results/assemblies/f1chr4.17.unicycler.gfa \
-	results/assemblies/f1chr4.18.unicycler.gfa \
-	results/assemblies/f1chr4.19.unicycler.gfa
+	results/assemblies/f1chr4.00.unicycler.gfa.png \
+	results/assemblies/f1chr4.01.unicycler.gfa.png \
+	results/assemblies/f1chr4.02.unicycler.gfa.png \
+	results/assemblies/f1chr4.03.unicycler.gfa.png \
+	results/assemblies/f1chr4.04.unicycler.gfa.png \
+	results/assemblies/f1chr4.05.unicycler.gfa.png \
+	results/assemblies/f1chr4.06.unicycler.gfa.png \
+	results/assemblies/f1chr4.07.unicycler.gfa.png \
+	results/assemblies/f1chr4.08.unicycler.gfa.png \
+	results/assemblies/f1chr4.09.unicycler.gfa.png \
+	results/assemblies/f1chr4.10.unicycler.gfa.png \
+	results/assemblies/f1chr4.11.unicycler.gfa.png \
+	results/assemblies/f1chr4.12.unicycler.gfa.png \
+	results/assemblies/f1chr4.13.unicycler.gfa.png \
+	results/assemblies/f1chr4.14.unicycler.gfa.png \
+	results/assemblies/f1chr4.15.unicycler.gfa.png \
+	results/assemblies/f1chr4.16.unicycler.gfa.png \
+	results/assemblies/f1chr4.17.unicycler.gfa.png \
+	results/assemblies/f1chr4.18.unicycler.gfa.png \
+	results/assemblies/f1chr4.19.unicycler.gfa.png
 
 # Visualize the chunks assembled with Unicycler using Bandage.
 bandage-chunks-unicycler:
@@ -185,6 +185,9 @@ results/assemblies/%.spades.contigs.fa: %.1.fq.gz %.2.fq.gz
 
 results/assemblies/%.spades.fastg: results/assemblies/%.spades.contigs.fa
 	ln -sf ../../working/$*.spades/assembly_graph.fastg $@
+
+results/assemblies/%.spades.gfa: results/assemblies/%.spades.contigs.fa
+	ln -sf ../../working/$*.spades/assembly_graph_with_scaffolds.gfa $@
 
 ################################################################################
 # abyss
