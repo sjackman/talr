@@ -94,11 +94,13 @@ def main():
     for seq in seq_barcodes:
         print(seq + "\t", end="")
         barcodes = seq_barcodes[seq]
-        for i, barcode in enumerate(sorted(barcodes)):
+        i = 0
+        for barcode in sorted(barcodes):
             if barcodes[barcode] >= args.barcode_threshold:
                 if i > 0:
                     print(",", end="")
                 print(barcode, end="")
+                i += 1
         print()
 
 
