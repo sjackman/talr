@@ -58,7 +58,7 @@ make results/quast/quast-f1chr4/report.txt
 
 Here is a summary of the results for `chr4` of the Fruit Fly genome.
 
-|                | NG50    | Quast-misassemblies |
+| Assembly       | NG50    | Quast-misassemblies |
 |----------------|---------|---------------------|
 | ABySS          | 53005   | 4                   |
 | SPAdes         | 77426   | 5                   |
