@@ -172,9 +172,9 @@ results/assemblies/%.unicycler.fa: %.1.fq.gz %.2.fq.gz
 results/assemblies/%.unicycler.gfa: results/assemblies/%.unicycler.fa
 	ln -sf ../../working/$*.unicycler/assembly.gfa $@
 
-# Reassemble contigs using Unicycler.
-%.unicycler.gfa: %.fa
-	unicycler -t $t --mode bold -o $*.unicycler --long $<
+# Reassemble paired-end reads and chunked contigs using Unicycler.
+%.unicycler.gfa: %.fa f1chr4.1.fq.gz f1chr4.2.fq.gz
+	unicycler -t $t --mode bold -o $*.unicycler -1 f1chr4.1.fq.gz -2 f1chr4.2.fq.gz --long $<
 
 ################################################################################
 # spades
