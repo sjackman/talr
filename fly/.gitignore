@@ -3,10 +3,13 @@
 *.fa
 *.fai
 *.fq.gz
+*.fq.gz.bdx
+*.fq.gz.gzi
 *.gfa
 *.gff
 *.log
 *.paf.gz
+*.path
 *.sam.gz
 *.unicycler/
 working

@@ -3,7 +3,7 @@
 # and https://support.10xgenomics.com/de-novo-assembly/software/overview/latest/performance
 
 # Number of threads.
-t=16
+t=8
 
 # Reference genome.
 ref=fly
@@ -62,7 +62,7 @@ f1chr4.supernova.fa: f1.supernova.fa
 	samtools faidx $< 49 | seqtk seq >$@
 
 # Download the linked reads of chr4.
-f1chr4.fq.gz:
+f1chr4.orig.fq.gz:
 	curl -O http://bcgsc.ca/downloads/btl/sjackman/f1chr4.fq.gz
 
 ################################################################################
@@ -97,9 +97,9 @@ f1chr4.fq.gz:
 
 ################################################################################
 # ASSEMBLIES
-unicycler: results/assemblies/$(sample).unicycler.fa
-spades: results/assemblies/$(sample).spades.contigs.fa
-abyss: results/assemblies/$(sample).abyss.contigs.fa
+unicycler: results/assemblies/$(sample).unicycler.fa results/assemblies/$(sample).unicycler.gfa
+spades: results/assemblies/$(sample).spades.contigs.fa results/assemblies/$(sample).spades.fastg
+abyss: results/assemblies/$(sample).abyss.contigs.fa results/assemblies/$(sample).abyss.contigs.gfa
 unicycler-arcs: results/arcs-abyss-scaffold/$(sample).unicycler.fa
 spades-arcs: results/arcs-abyss-scaffold/$(sample).spades.contigs.fa results/arcs-abyss-scaffold/$(sample).spades.scaffolds.fa
 abyss-arcs: results/arcs-abyss-scaffold/$(sample).abyss.contigs.fa results/arcs-abyss-scaffold/$(sample).abyss.scaffolds.fa
@@ -192,3 +192,36 @@ results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/
 # Align a FASTA file to the reference genome and produce a SAM file.
 %.$(ref).sam.gz: $(ref).fa %.fa
 	$(time) minimap2 -t$t -xasm10 -a $^ | $(gzip) >$@
+
+################################################################################
+# Talr
+
+# Recompress the gzip file using bgzip.
+%.fq.gz: %.orig.fq.gz
+	gunzip -c $< | bgzip -@$t >$@
+
+# Index a bgzip file.
+%.gz.gzi: %.gz
+	bgzip -r $<
+
+# Index a bgzipped FASTQ file.
+%.fq.gz.bdx: %.fq.gz
+	../bin/index_barcodes.py $<
+
+# Split a Physlr fleshed-out backbone path into equal-sized chunks.
+%.fleshed.chunked.path: %.fleshed.path
+	../bin/chunk_fleshed_backbone.py $< 20 0.5 >$@
+
+# Split a chunked path file into one line per chunk.
+%.00.path: %.path
+	gsplit -l1 -d --additional-suffix=.path $< $*.
+
+# Extract the reads of each chunk.
+%.00.fq.gz: %.backbone.fleshed.chunked.00.path %.fq.gz.bdx
+	awk '{ printf "-" } END { printf "\r" }' $*.backbone.fleshed.chunked.??.path; \
+	set -e; \
+	for i in $$(awk '{printf "%02d\n", NR-1}' $*.backbone.fleshed.chunked.??.path); do \
+		../bin/get_barcode_reads.py $*.fq.gz <$*.backbone.fleshed.chunked.$$i.path | $(gzip) >$*.$$i.fq.gz; \
+		printf "="; \
+	done
+	echo
