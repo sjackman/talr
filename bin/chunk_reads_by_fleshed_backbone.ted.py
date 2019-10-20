@@ -4,9 +4,10 @@ import sys
 import argparse
 import subprocess as sp
 from collections import OrderedDict
+import numpy as np
 
-# import os.path as op
-# import logging
+import os.path as op
+import logging
 
 
 def main(argv=None):
@@ -16,14 +17,15 @@ def main(argv=None):
 
     args = get_parse_args()
 
-    # logfmt = '[%(asctime)s - %(levelname)s - line:%(lineno)d] %(message)s'
-    # datefmt = '%Y-%m-%d %H:%M:%S'
-    # logfile = '{}.log'.format(op.basename(op.splitext(__file__)[0]))
-    # sys.stderr.write("Log messages will be written to: {}\n".format(logfile))
-    # logging.basicConfig(filename=logfile, format=logfmt, datefmt=datefmt,
-    #                     filemode='w', level=logging.INFO)
+    logfmt = '[%(asctime)s - %(levelname)s - line:%(lineno)d] %(message)s'
+    datefmt = '%Y-%m-%d %H:%M:%S'
+    logfile = '{}.log'.format(op.basename(op.splitext(__file__)[0]))
+    sys.stderr.write("Log messages will be written to: {}\n".format(logfile))
+    logging.basicConfig(filename=logfile, format=logfmt, datefmt=datefmt,
+                        filemode='w', level=logging.INFO)
 
     bdx = import_bdx(bdx_file=args.bdx)
+    rpg = scrub_bdx(bdx=bdx, rpg_low=args.min_reads, rpg_high=args.max_reads)
 
     fbb = import_path(path_file=args.path, bdx=bdx)
     # print(fbb[0][list(fbb[0].keys())[0]])
@@ -58,12 +60,12 @@ def import_bdx(bdx_file):
             temp = line.strip().split()
             if not temp:
                 continue
-            bdx[temp[0]] = temp[1:4]
+            bdx[temp[0]] = [int(x) for x in temp[1:4]]
 
     return bdx
 
 
-def scrub_bdx(bdx):
+def scrub_bdx(bdx, rpg_low, rpg_high):
     """Remove or zero out gems with too many or too few reads
 
     Args:
@@ -77,7 +79,37 @@ def scrub_bdx(bdx):
     #   2. Compute distribution across all GEMs
     #   3. Identify a threshold for suspicious GEMs
     #   4. Remove suspicious GEMs or zero out their read counts and size
-    pass
+    rpg = [int(v[0]) for k, v in bdx.items()]   # Reads per GEM
+
+    gem_count = len(rpg)
+    read_count = sum(rpg)
+    logging.info("Total number of GEMs before filtering: {:,}".format(gem_count))
+    logging.info("Total number of reads before filtering: {:,}".format(read_count))
+
+    rpg_min = np.min(rpg)
+    rpg_q25 = np.quantile(rpg, 0.25)
+    rpg_med = np.median(rpg)
+    rpg_q75 = np.quantile(rpg, 0.75)
+    rpg_max = np.max(rpg)
+    logging.info("Read per GEM quantiles: " + strjoin(", ", [rpg_min, rpg_q25, rpg_med, rpg_q75, rpg_max]))
+
+    if not rpg_high:
+        rpg_high = rpg_q75 + 1.5 * (rpg_q75 - rpg_q25)
+    logging.info("Reads per GEM thresholds: {:,} ≥ rpg ≥ {:,}".format(rpg_low, rpg_high))
+
+    for k, v in bdx.items():
+        if (v[0] < rpg_low) or (v[0] > rpg_high):
+            bdx[k] = [0, 0, 0]
+
+    # Recompute sums, avoiding the zero'd GEMs
+    rpg = [int(v[0]) for k, v in bdx.items() if v[0] > 0]  # Reads per GEM
+
+    gem_count = len(rpg)
+    read_count = sum(rpg)
+    logging.info("Total number of GEMs after filtering: {:,}".format(gem_count))
+    logging.info("Total number of reads after filtering: {:,}".format(read_count))
+
+    return rpg, gem_count, read_count
 
 
 def import_path(path_file, bdx):
@@ -172,21 +204,71 @@ def subset_reads(fqbgz, bdx, barcode):
     return reads
 
 
+def strjoin(sep, list):
+    """Convert each item in a list into strings, then join using separator"""
+    try:
+        joined_str = str(sep).join(["{:,}".format(x) for x in list])
+    except ValueError:
+        joined_str = str(sep).join([str(x) for x in list])
+
+    return joined_str
+
+
 def get_parse_args():
     """Parse commandline arguments and options"""
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description="Subset bgzip'd FASTQ file using linked read barcode",
+        description="Subset bgzip'd FASTQ file using linked read barcode"
     )
 
     parser.add_argument(
-        "path", type=str, help="A .backbone.fleshed.path file from Physlr"
+        "path",
+        type=str,
+        help="A .backbone.fleshed.path file from Physlr"
     )
 
-    parser.add_argument("fqbgz", type=str, help="A bgzip'd (not gzip'd) FASTQ file")
+    parser.add_argument(
+        "fqbgz",
+        type=str,
+        help="A bgzip'd (not gzip'd) FASTQ file"
+    )
 
     parser.add_argument(
-        "bdx", type=str, help="A .bdx index file for a bgzip'd (not gzip'd) FASTQ file"
+        "bdx",
+        type=str,
+        help="A .bdx index file for a bgzip'd (not gzip'd) FASTQ file"
+    )
+
+    parser.add_argument(
+        "-m",
+        "--min-reads",
+        type=int,
+        default=10,
+        help="Minimum number of read pairs a GEM should have to be included"
+    )
+
+    parser.add_argument(
+        "-M",
+        "--max-reads",
+        type=int,
+        default=0,
+        help="Maximum number of read pairs a GEM should have to be included (set to '0' to use: Q3 + 1.5 * (Q3 - Q1))"
+    )
+
+    parser.add_argument(
+        "-c",
+        "--chunks",
+        type=int,
+        default=10,
+        help="Number of overlapping chunks into which to divide the reads"
+    )
+
+    parser.add_argument(
+        "-f",
+        "--olap-fraction",
+        type=float,
+        default=0.2,
+        help="Fraction by which the chunks should overlap"
     )
 
     parser.add_argument(
@@ -194,10 +276,8 @@ def get_parse_args():
         "--outfile",
         type=argparse.FileType("w"),
         default=sys.stdout,
-        help="Output FASTQ file",
+        help="Output FASTQ file"
     )
-
-    # TODO: Add parameters for # chunks and overlap fraction
 
     args = parser.parse_args()
     return args
