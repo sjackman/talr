@@ -172,6 +172,10 @@ results/assemblies/%.unicycler.fa: %.1.fq.gz %.2.fq.gz
 results/assemblies/%.unicycler.gfa: results/assemblies/%.unicycler.fa
 	ln -sf ../../working/$*.unicycler/assembly.gfa $@
 
+# Reassemble contigs using Unicycler.
+%.unicycler.gfa: %.fa
+	unicycler -t $t --mode bold -o $*.unicycler --long $<
+
 ################################################################################
 # spades
 
