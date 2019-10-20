@@ -192,3 +192,10 @@ results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/
 # Align a FASTA file to the reference genome and produce a SAM file.
 %.$(ref).sam.gz: $(ref).fa %.fa
 	$(time) minimap2 -t$t -xasm10 -a $^ | $(gzip) >$@
+
+################################################################################
+# Talr
+
+# Split a Physlr fleshed-out backbone path into equal-sized chunks.
+%.fleshed.chunked.path: %.fleshed.path
+	../bin/chunk_fleshed_backbone.py $< 20 0.5 >$@
