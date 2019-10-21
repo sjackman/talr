@@ -31,7 +31,7 @@ Linked read sequencing is a library preparation technique used prior to short re
 
 1. Use Physlr to construct a physical map of the linked reads, which is an ordered list of barcodes.
 2. Identify a set of barcodes that covers a region of 100 to 200 kbp.
-3. Collect the reads from that set barcodes.
+3. Collect the reads from that set of barcodes.
 4. Assemble those reads using a standard short read assembler.
 5. Repeat steps two through five for a tiling path of adjacent, overlapping regions.
 6. Combine these targeted subassemblies using a standard long read assembler.
