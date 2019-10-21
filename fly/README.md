@@ -1,5 +1,5 @@
 ## Assembling linked reads
-First, in order to have baseline assemblies to compare against TALR, we assemble 
+First, in order to have baseline assemblies to compare against Talr, we assemble 
 linked-reads using both LR-aware and non-LR-aware assemblers.
 For non-LR-aware assemblers we use ARCS to generate scaffolds using linked reads.
 
@@ -50,7 +50,7 @@ results/arcs-abyss-scaffold/f1chr4.unicycler.fa
 ### LR-aware assemblers
 
 ## Assessment of assemblies
-We can use QUAST to compare TALR with other assemblies generated above. This can be easily done using the following command:
+We can use QUAST to compare Talr with other assemblies generated above. This can be easily done using the following command:
 
 ```
 make results/quast/quast-f1chr4/report.txt
