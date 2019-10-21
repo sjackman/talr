@@ -10,6 +10,8 @@
 *.log
 *.paf.gz
 *.path
+*.png
+*.quast/
 *.sam.gz
 *.unicycler/
 working
