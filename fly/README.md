@@ -70,3 +70,4 @@ Here is a summary of the results for `chr4` of the Fruit Fly genome.
 | Talr+SPAdes+Miniasm (sdj) | 160,342  | 8                   |
 | Talr+Unicycler+Miniasm    | 112,721  | 7                   |
 | Talr+SPAdes+Unicycler     | 254,061  | 5                   |
+| Talr+SPAdes+Unicycler+ARCS| 1,126,501| 6                   |
