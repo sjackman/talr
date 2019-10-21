@@ -250,8 +250,8 @@ results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/
 
 # Aggregate QUAST reports.
 f1chr4.quast.tsv: \
-		f1chr4.chunked.spades.miniasm.quast.tsv \
-		f1chr4.chunked.unicycler.miniasm.quast.tsv \
+		f1chr4.talr.spades.miniasm.quast.tsv \
+		f1chr4.talr.unicycler.miniasm.quast.tsv \
 		f1chr4.unicycler.quast.tsv
 	mlr --tsvlite cat $^ >$@
 	mlr --tsvlite cut -f Assembly,NG50 $@ | column -t
@@ -298,7 +298,7 @@ f1chr4.quast.tsv: \
 	../bin/index_barcodes.py $<
 
 # Split a Physlr fleshed-out backbone path into equal-sized chunks.
-%.fleshed.chunked.path: %.fleshed.path
+%.fleshed.talr.path: %.fleshed.path
 	../bin/chunk_fleshed_backbone.py $< 20 0.5 >$@
 
 # Split a chunked path file into one line per chunk.
@@ -306,11 +306,11 @@ f1chr4.quast.tsv: \
 	gsplit -l1 -d --additional-suffix=.path $< $*.
 
 # Extract the reads of each chunk.
-%.00.fq.gz: %.backbone.fleshed.chunked.00.path %.fq.gz.bdx
-	awk '{ printf "-" } END { printf "\r" }' $*.backbone.fleshed.chunked.??.path; \
+%.00.fq.gz: %.backbone.fleshed.talr.00.path %.fq.gz.bdx
+	awk '{ printf "-" } END { printf "\r" }' $*.backbone.fleshed.talr.??.path; \
 	set -e; \
-	for i in $$(awk '{printf "%02d\n", NR-1}' $*.backbone.fleshed.chunked.??.path); do \
-		../bin/get_barcode_reads.py $*.fq.gz <$*.backbone.fleshed.chunked.$$i.path | $(gzip) >$*.$$i.fq.gz; \
+	for i in $$(awk '{printf "%02d\n", NR-1}' $*.backbone.fleshed.talr.??.path); do \
+		../bin/get_barcode_reads.py $*.fq.gz <$*.backbone.fleshed.talr.$$i.path | $(gzip) >$*.$$i.fq.gz; \
 		printf "="; \
 	done
 	echo
@@ -319,7 +319,7 @@ f1chr4.quast.tsv: \
 # Concatenate chunked assemblies
 
 # Concatenate chunked SPAdes assemblies.
-f1chr4.chunked.spades.fa: \
+f1chr4.talr.spades.fa: \
 		results/assemblies/f1chr4.00.spades.scaffolds.fa \
 		results/assemblies/f1chr4.01.spades.scaffolds.fa \
 		results/assemblies/f1chr4.02.spades.scaffolds.fa \
@@ -343,7 +343,7 @@ f1chr4.chunked.spades.fa: \
 	cat $^ | seqtk rename >$@
 
 # Concatenate chunked Unicycler assemblies.
-f1chr4.chunked.unicycler.fa: \
+f1chr4.talr.unicycler.fa: \
 		results/assemblies/f1chr4.00.unicycler.fa \
 		results/assemblies/f1chr4.01.unicycler.fa \
 		results/assemblies/f1chr4.02.unicycler.fa \
