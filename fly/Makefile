@@ -236,10 +236,25 @@ results/arcs-abyss-scaffold/%.fa: results/assemblies/%.fa
 	ln -sf ../../working/arcs-abyss-scaffold/$*.arcs.fa $@
 
 ################################################################################
-# quast
+# QUAST
+
+# Compute assembly metrics of one assembly using QUAST.
+%.quast.tsv: flychr4.fa %.fa
+	quast -se --fast --scaffold-gap-max-size 100000 -t $t -o $*.quast -r $^
+	ln -s $*.quast/transposed_report.tsv $@
+
+# Compute assembly metrics of multiple assemblies using QUAST.
 results/quast/quast-%/report.txt: results/assemblies/%.abyss.contigs.fa results/assemblies/%.spades.contigs.fa results/assemblies/%.unicycler.fa results/arcs-abyss-scaffold/%.abyss.contigs.fa results/arcs-abyss-scaffold/%.spades.contigs.fa results/arcs-abyss-scaffold/%.unicycler.fa 
 	mkdir -p results/quast/quast-$*
 	quast.py --eukaryote -t $t -o results/quast/quast-$* -r flychr4.fa -l abyss-contig,spades-contigs,abyss,spades,unicycler,abyss-contig-arcs,spades-contigs-arcs,abyss-arcs,spades-arcs,unicycler-arcs results/assemblies/$*.abyss.contigs.fa results/assemblies/$*.spades.contigs.fa results/assemblies/$*.abyss.scaffolds.fa results/assemblies/$*.spades.scaffolds.fa results/assemblies/$*.unicycler.fa results/arcs-abyss-scaffold/$*.abyss.contigs.fa results/arcs-abyss-scaffold/$*.spades.contigs.fa results/arcs-abyss-scaffold/$*.abyss.scaffolds.fa results/arcs-abyss-scaffold/$*.spades.scaffolds.fa results/arcs-abyss-scaffold/$*.unicycler.fa 
+
+# Aggregate QUAST reports.
+f1chr4.quast.tsv: \
+		f1chr4.chunked.spades.miniasm.quast.tsv \
+		f1chr4.chunked.unicycler.miniasm.quast.tsv \
+		f1chr4.unicycler.quast.tsv
+	mlr --tsvlite cat $^ >$@
+	mlr --tsvlite cut -f Assembly,NG50 $@ | column -t
 
 ################################################################################
 # Bandage
