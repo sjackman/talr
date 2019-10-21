@@ -40,6 +40,10 @@ Linked read sequencing is a library preparation technique used prior to short re
 
 For a list of tasks, see <https://github.com/sjackman/talr/issues/1>
 
+# Results
+
+See the results for chromosome 4 of fruit fly (*Drosophila melanogaster*) at [fly/README.md](fly/README.md).
+
 # Install Software
 
 Install Homebrew on macOS (<https://brew.sh>) and Linux (<https://docs.brew.sh/linux>).
