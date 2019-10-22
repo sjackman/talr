@@ -78,7 +78,7 @@ Here is a summary of the results for `chr4` of the Fruit Fly genome.
 
 ## Unicycler (baseline)
 
-We assembled the linked reads using Unicycler, ignoring barcodes.
+Assemble the linked reads using Unicycler, ignoring barcodes.
 
 ![Unicycler without barcodes](f1chr4.unicycler.gfa.png)
 
