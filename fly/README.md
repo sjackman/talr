@@ -1,3 +1,5 @@
+# Methods
+
 ## Assembling linked reads
 First, in order to have baseline assemblies to compare against Talr, we assemble 
 linked-reads using both LR-aware and non-LR-aware assemblers.
@@ -49,6 +51,8 @@ results/arcs-abyss-scaffold/f1chr4.unicycler.fa
 
 ### LR-aware assemblers
 
+# Results
+
 ## Assessment of assemblies
 We can use QUAST to compare Talr with other assemblies generated above. This can be easily done using the following command:
 
@@ -71,3 +75,33 @@ Here is a summary of the results for `chr4` of the Fruit Fly genome.
 | Talr+Unicycler+Miniasm    | 112,721  | 7                   |
 | Talr+SPAdes+Unicycler     | 254,061  | 5                   |
 | Talr+SPAdes+Unicycler+ARCS| 1,126,501| 6                   |
+
+## Unicycler (baseline)
+
+We assembled the linked reads using Unicycler, ignoring barcodes.
+
+![Unicycler without barcodes](f1chr4.unicycler.gfa.png)
+
+## Physlr
+
+Construct a physical map of the linked read large molecules.
+
+![Physlr physical map](f1chr4.physlr.gv.png)
+
+## Talr and SPAdes
+
+Extract a FASTQ file containing the reads for those barcodes found in each region. Assemble the reads of each region using SPAdes.
+
+![SPAdes targeted assemblies](f1chr4.talr.spades.png)
+
+## Unicycler 
+
+Assemble the short reads using Unicycler, and use all of the SPAdes contigs as "long reads".
+
+![Unicycler using SPAdes contigs as long reads](f1chr4.talr.spades.unicycler.gfa.png)
+
+## ARCS
+
+Scaffold the Unicycler contigs with the linked reads using ARCS.
+
+![ARCS scaffold](f1chr4.talr.spades.unicycler.arcs.fa.png)
